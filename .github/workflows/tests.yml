@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - testing
   pull_request:
 
 permissions:
@@ -12,6 +13,28 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
+          MYSQL_DATABASE: peluangku
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: peluangku
+      DB_USERNAME: root
+      DB_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -22,7 +45,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: '8.3'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
 
