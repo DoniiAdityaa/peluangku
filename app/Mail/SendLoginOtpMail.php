@@ -16,10 +16,9 @@ class SendLoginOtpMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        public readonly string $otp,
+    ) {}
 
     /**
      * Get the message envelope.
@@ -27,7 +26,7 @@ class SendLoginOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Login Otp Mail',
+            subject: 'Kode OTP untuk masuk',
         );
     }
 
@@ -37,7 +36,8 @@ class SendLoginOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.login-otp',
+            with: ['otp' => $this->otp],
         );
     }
 
