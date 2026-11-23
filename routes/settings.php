@@ -10,6 +10,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('settings/profile/interests', [ProfileController::class, 'storeInterest'])->name('profile.interests.store');
+    Route::delete('settings/profile/interests/{interest}', [ProfileController::class, 'destroyInterest'])->name('profile.interests.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

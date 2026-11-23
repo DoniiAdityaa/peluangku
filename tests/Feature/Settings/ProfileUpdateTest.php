@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Models\Interest;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -30,6 +31,10 @@ class ProfileUpdateTest extends TestCase
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
+                'domisili' => 'Bandung',
+                'kampus' => 'Universitas Indonesia',
+                'jurusan' => 'Teknik Informatika',
+                'pendidikan_terakhir' => 'Sarjana (S1)',
             ]);
 
         $response
@@ -40,7 +45,30 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
+        $this->assertSame('Bandung', $user->domisili);
+        $this->assertSame('Universitas Indonesia', $user->kampus);
+        $this->assertSame('Teknik Informatika', $user->jurusan);
+        $this->assertSame('Sarjana (S1)', $user->pendidikan_terakhir);
         $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_user_can_add_and_remove_profile_interests()
+    {
+        $user = User::factory()->create();
+        $interest = Interest::query()->where('name', 'Pendidikan')->firstOrFail();
+
+        $this->actingAs($user)
+            ->post(route('profile.interests.store'), [
+                'interest_id' => $interest->id,
+            ])
+            ->assertRedirect(route('profile.edit'));
+
+        $this->assertTrue($user->interests()->whereKey($interest->id)->exists());
+
+        $this->delete(route('profile.interests.destroy', $interest))
+            ->assertRedirect(route('profile.edit'));
+
+        $this->assertFalse($user->interests()->whereKey($interest->id)->exists());
     }
 
     public function test_email_is_stored_in_lowercase_so_the_user_can_still_log_in()
@@ -107,6 +135,8 @@ class ProfileUpdateTest extends TestCase
     public function test_user_can_delete_their_account()
     {
         $user = User::factory()->create();
+        $interest = Interest::query()->firstOrFail();
+        $user->interests()->attach($interest);
 
         $response = $this
             ->actingAs($user)
@@ -120,6 +150,10 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertGuest();
         $this->assertNull($user->fresh());
+        $this->assertDatabaseMissing('interest_user', [
+            'user_id' => $user->id,
+            'interest_id' => $interest->id,
+        ]);
     }
 
     public function test_correct_password_must_be_provided_to_delete_account()
