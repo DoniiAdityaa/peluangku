@@ -1,5 +1,7 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, Head, router, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
+import { Plus, X } from 'lucide-react';
+import * as React from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -7,13 +9,170 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { edit } from '@/routes/profile';
 import type { Auth } from '@/types';
 import { send } from '@/routes/verification';
 
+type Interest = {
+    id: number;
+    name: string;
+};
+
 type PageProps = {
     auth: Auth;
+    availableInterests: Interest[];
+    userInterests: Interest[];
 };
+
+const OTHER_OPTION = '__other__';
+
+const cities = [
+    'Jakarta',
+    'Surabaya',
+    'Bandung',
+    'Medan',
+    'Semarang',
+    'Makassar',
+    'Palembang',
+    'Yogyakarta',
+    'Denpasar',
+    'Balikpapan',
+    'Samarinda',
+    'Malang',
+    'Tangerang',
+    'Bekasi',
+    'Depok',
+    'Bogor',
+    'Batam',
+    'Pekanbaru',
+    'Padang',
+    'Bandar Lampung',
+    'Pontianak',
+    'Banjarmasin',
+    'Manado',
+    'Jayapura',
+];
+
+const campuses = [
+    'Universitas Indonesia',
+    'Universitas Gadjah Mada',
+    'Institut Teknologi Bandung',
+    'Institut Pertanian Bogor',
+    'Institut Teknologi Sepuluh Nopember',
+    'Universitas Airlangga',
+    'Universitas Diponegoro',
+    'Universitas Padjadjaran',
+    'Universitas Brawijaya',
+    'Universitas Hasanuddin',
+    'Universitas Sebelas Maret',
+    'Universitas Negeri Yogyakarta',
+    'Universitas Pendidikan Indonesia',
+    'Universitas Sumatera Utara',
+    'Universitas Andalas',
+    'Universitas Bina Nusantara',
+    'Universitas Telkom',
+    'Universitas Terbuka',
+];
+
+const majors = [
+    'Akuntansi',
+    'Administrasi Bisnis',
+    'Agribisnis',
+    'Arsitektur',
+    'Biologi',
+    'Ekonomi',
+    'Farmasi',
+    'Ilmu Hukum',
+    'Ilmu Komunikasi',
+    'Ilmu Politik',
+    'Kedokteran',
+    'Keperawatan',
+    'Manajemen',
+    'Pendidikan',
+    'Psikologi',
+    'Sistem Informasi',
+    'Teknik Elektro',
+    'Teknik Industri',
+    'Teknik Informatika',
+    'Teknik Sipil',
+];
+
+const educationLevels = [
+    'SMA Sederajat',
+    'Diploma 1 (D1)',
+    'Diploma 2 (D2)',
+    'Diploma 3 (D3)',
+    'Diploma 4 (D4)/Sarjana Terapan',
+    'Sarjana (S1)',
+    'Magister (S2)',
+    'Doktor (S3)',
+];
+
+function ProfileSelectField({
+    name,
+    label,
+    options,
+    defaultValue,
+    error,
+}: {
+    name: string;
+    label: string;
+    options: string[];
+    defaultValue: string | null | undefined;
+    error?: string;
+}) {
+    const isKnownValue = defaultValue ? options.includes(defaultValue) : true;
+    const [selection, setSelection] = React.useState(
+        isKnownValue ? (defaultValue ?? '') : OTHER_OPTION,
+    );
+    const [customValue, setCustomValue] = React.useState(
+        isKnownValue ? '' : (defaultValue ?? ''),
+    );
+
+    return (
+        <div className="grid gap-2">
+            <Label htmlFor={name}>{label}</Label>
+            <Select
+                value={selection}
+                onValueChange={setSelection}
+                name={selection === OTHER_OPTION ? undefined : name}
+                required
+            >
+                <SelectTrigger id={name} className="mt-1 w-full">
+                    <SelectValue placeholder={`Pilih ${label.toLowerCase()}`} />
+                </SelectTrigger>
+                <SelectContent>
+                    {options.map((option) => (
+                        <SelectItem key={option} value={option}>
+                            {option}
+                        </SelectItem>
+                    ))}
+                    {name !== 'pendidikan_terakhir' && (
+                        <SelectItem value={OTHER_OPTION}>Lainnya</SelectItem>
+                    )}
+                </SelectContent>
+            </Select>
+            {selection === OTHER_OPTION && (
+                <Input
+                    id={`${name}_custom`}
+                    value={customValue}
+                    onChange={(event) => setCustomValue(event.target.value)}
+                    name={name}
+                    required
+                    placeholder={`Masukkan ${label.toLowerCase()}`}
+                />
+            )}
+            <InputError className="mt-2" message={error} />
+        </div>
+    );
+}
 
 export default function Profile({
     mustVerifyEmail,
@@ -22,7 +181,38 @@ export default function Profile({
     mustVerifyEmail: boolean;
     status?: string;
 }) {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, availableInterests, userInterests } =
+        usePage<PageProps>().props;
+    const [updatingInterest, setUpdatingInterest] = React.useState(false);
+    const [interestError, setInterestError] = React.useState<string>();
+
+    const addInterest = (interestId: string) => {
+        setInterestError(undefined);
+        setUpdatingInterest(true);
+        router.post(
+            '/settings/profile/interests',
+            { interest_id: Number(interestId) },
+            {
+                preserveScroll: true,
+                onError: (errors) => {
+                    setInterestError(Object.values(errors)[0]);
+                },
+                onFinish: () => setUpdatingInterest(false),
+            },
+        );
+    };
+
+    const removeInterest = (interestId: number) => {
+        setInterestError(undefined);
+        setUpdatingInterest(true);
+        router.delete(`/settings/profile/interests/${interestId}`, {
+            preserveScroll: true,
+            onError: (errors) => {
+                setInterestError(Object.values(errors)[0]);
+            },
+            onFinish: () => setUpdatingInterest(false),
+        });
+    };
 
     return (
         <>
@@ -82,6 +272,96 @@ export default function Profile({
                                 <InputError
                                     className="mt-2"
                                     message={errors.email}
+                                />
+                            </div>
+
+                            <ProfileSelectField
+                                name="domisili"
+                                label="Domisili"
+                                options={cities}
+                                defaultValue={auth.user.domisili}
+                                error={errors.domisili}
+                            />
+
+                            <ProfileSelectField
+                                name="kampus"
+                                label="Kampus"
+                                options={campuses}
+                                defaultValue={auth.user.kampus}
+                                error={errors.kampus}
+                            />
+
+                            <ProfileSelectField
+                                name="jurusan"
+                                label="Jurusan"
+                                options={majors}
+                                defaultValue={auth.user.jurusan}
+                                error={errors.jurusan}
+                            />
+
+                            <ProfileSelectField
+                                name="pendidikan_terakhir"
+                                label="Pendidikan Terakhir"
+                                options={educationLevels}
+                                defaultValue={auth.user.pendidikan_terakhir}
+                                error={errors.pendidikan_terakhir}
+                            />
+
+                            <div className="grid gap-2">
+                                <Label>Bidang Minat</Label>
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {userInterests.map((interest) => (
+                                        <Button
+                                            key={interest.id}
+                                            type="button"
+                                            variant="outline"
+                                            disabled={updatingInterest}
+                                            onClick={() =>
+                                                removeInterest(interest.id)
+                                            }
+                                            aria-label={`Hapus bidang minat ${interest.name}`}
+                                        >
+                                            {interest.name}
+                                            <X aria-hidden="true" />
+                                        </Button>
+                                    ))}
+                                    <Select
+                                        value=""
+                                        onValueChange={addInterest}
+                                        disabled={updatingInterest}
+                                    >
+                                        <SelectTrigger
+                                            aria-label="Tambah bidang minat"
+                                            className="size-9 min-w-9 justify-center p-0"
+                                        >
+                                            <Plus aria-hidden="true" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableInterests
+                                                .filter(
+                                                    (interest) =>
+                                                        !userInterests.some(
+                                                            (selected) =>
+                                                                selected.id ===
+                                                                interest.id,
+                                                        ),
+                                                )
+                                                .map((interest) => (
+                                                    <SelectItem
+                                                        key={interest.id}
+                                                        value={String(
+                                                            interest.id,
+                                                        )}
+                                                    >
+                                                        {interest.name}
+                                                    </SelectItem>
+                                                ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <InputError
+                                    className="mt-2"
+                                    message={interestError}
                                 />
                             </div>
 
