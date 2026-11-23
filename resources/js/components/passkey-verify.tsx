@@ -6,6 +6,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 
 type Props = {
     routes?: {
@@ -15,6 +16,8 @@ type Props = {
     label?: string;
     loadingLabel?: string;
     separator?: string;
+    className?: string;
+    separatorClassName?: string;
 };
 
 export default function PasskeyVerify({
@@ -22,6 +25,8 @@ export default function PasskeyVerify({
     label,
     loadingLabel,
     separator,
+    className,
+    separatorClassName,
 }: Props = {}) {
     const { verify, isLoading, error, isSupported } = usePasskeyVerify({
         ...(routes && {
@@ -45,7 +50,7 @@ export default function PasskeyVerify({
                 <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className={cn('w-full', className)}
                     onClick={verify}
                     disabled={isLoading}
                 >
@@ -64,7 +69,12 @@ export default function PasskeyVerify({
                     <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
+                    <span
+                        className={cn(
+                            'bg-background px-2 text-muted-foreground',
+                            separatorClassName,
+                        )}
+                    >
                         {separator ?? 'Or continue with email'}
                     </span>
                 </div>

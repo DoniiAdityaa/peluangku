@@ -16,7 +16,7 @@ type Props = {
 export default function Register({ passwordRules }: Props) {
     return (
         <>
-            <Head title="Register" />
+            <Head title="Buat akun" />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -27,7 +27,7 @@ export default function Register({ passwordRules }: Props) {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nama lengkap</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -36,7 +36,8 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="Full name"
+                                    placeholder="Masukkan nama lengkapmu"
+                                    className="h-12 rounded-xl bg-background/50"
                                 />
                                 <InputError
                                     message={errors.name}
@@ -45,7 +46,7 @@ export default function Register({ passwordRules }: Props) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -53,20 +54,22 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={2}
                                     autoComplete="email"
                                     name="email"
-                                    placeholder="youremail@gmail.com"
+                                    placeholder="nama@email.com"
+                                    className="h-12 rounded-xl bg-background/50"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Kata sandi</Label>
                                 <PasswordInput
                                     id="password"
                                     required
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="Buat kata sandi"
+                                    className="h-12 rounded-xl bg-background/50"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError message={errors.password} />
@@ -74,7 +77,7 @@ export default function Register({ passwordRules }: Props) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    Konfirmasi kata sandi
                                 </Label>
                                 <PasswordInput
                                     id="password_confirmation"
@@ -82,7 +85,8 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
+                                    placeholder="Ulangi kata sandi"
+                                    className="h-12 rounded-xl bg-background/50"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError
@@ -92,19 +96,19 @@ export default function Register({ passwordRules }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full"
+                                className="mt-2 h-12 w-full rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-px hover:bg-primary/90 hover:shadow-primary/30 active:translate-y-0"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
-                                Create account
+                                {processing ? 'Membuat akun...' : 'Buat akun'}
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
+                            Sudah punya akun?{' '}
                             <TextLink href={login()} tabIndex={6}>
-                                Log in
+                                Masuk
                             </TextLink>
                         </div>
                     </>
@@ -115,6 +119,8 @@ export default function Register({ passwordRules }: Props) {
 }
 
 Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+    variant: 'register',
+    title: 'Mulai langkahmu.',
+    description:
+        'Buat akun untuk menjelajahi peluang beasiswa. Profil bisa kamu lengkapi setelah verifikasi email.',
 };
