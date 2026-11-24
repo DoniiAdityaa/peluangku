@@ -59,6 +59,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * Get the scholarships this user has favorited.
+     *
+     * @return BelongsToMany<Scholarship, $this>
+     */
+    public function favoriteScholarships(): BelongsToMany
+    {
+        return $this->belongsToMany(Scholarship::class, 'fav_user', 'user_id', 'scholarships_id');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
