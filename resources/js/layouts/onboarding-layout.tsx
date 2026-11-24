@@ -1,8 +1,9 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Check } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { logout } from '@/routes';
+import { skip } from '@/routes/onboarding';
 
 const STEPS = ['Pilih cara', 'Isi profil', 'Selesai'];
 
@@ -24,6 +25,17 @@ export default function OnboardingLayout({
 }) {
     const { component } = usePage();
     const current = STEP_OF_PAGE[component] ?? 0;
+    const finished = current >= STEPS.length;
+
+    const skipOnboarding = () => {
+        if (
+            window.confirm(
+                'Lewati pengisian profil? Kamu bisa melengkapinya nanti.',
+            )
+        ) {
+            router.post(skip().url);
+        }
+    };
 
     return (
         <div className="min-h-svh bg-background text-foreground">
@@ -35,13 +47,30 @@ export default function OnboardingLayout({
                     height="1116"
                     className="h-auto w-32"
                 />
-                <Link
-                    href={logout()}
-                    as="button"
-                    className="cursor-pointer text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                >
-                    Keluar
-                </Link>
+                <div className="flex items-center gap-4">
+                    {!finished && (
+                        <>
+                            <button
+                                type="button"
+                                onClick={skipOnboarding}
+                                className="cursor-pointer text-sm font-medium text-foreground/80 underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                            >
+                                Lewati
+                            </button>
+                            <span
+                                aria-hidden="true"
+                                className="h-4 w-px bg-border"
+                            />
+                        </>
+                    )}
+                    <Link
+                        href={logout()}
+                        as="button"
+                        className="cursor-pointer text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        Keluar
+                    </Link>
+                </div>
             </header>
 
             <main className="mx-auto flex max-w-6xl flex-col items-center px-6 pt-4 pb-20 sm:px-12">
