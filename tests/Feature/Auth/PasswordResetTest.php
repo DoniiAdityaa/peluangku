@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -91,5 +93,28 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('email');
+    }
+
+    public function test_reset_password_screen_marks_valid_token(): void
+    {
+        $user = User::factory()->create();
+        $token = Password::broker()->createToken($user);
+
+        $this->get(route('password.reset', ['token' => $token, 'email' => $user->email]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('auth/reset-password')
+                ->where('tokenValid', true));
+    }
+
+    public function test_reset_password_screen_marks_used_or_invalid_token(): void
+    {
+        $user = User::factory()->create();
+
+        $this->get(route('password.reset', ['token' => 'invalid-token', 'email' => $user->email]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('auth/reset-password')
+                ->where('tokenValid', false));
     }
 }

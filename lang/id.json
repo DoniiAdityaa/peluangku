@@ -1,0 +1,8 @@
+{
+    "The provided password was incorrect.": "Kata sandi yang kamu masukkan salah.",
+    "The provided two factor authentication code was invalid.": "Kode verifikasi tidak valid. Coba lagi.",
+    "The provided two factor recovery code was invalid.": "Kode pemulihan tidak valid.",
+    "The :attribute must be at least :length characters.": ":Attribute minimal :length karakter.",
+    "Password updated.": "Kata sandi diperbarui.",
+    "Profile updated.": "Profil diperbarui."
+}
