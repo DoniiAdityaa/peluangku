@@ -52,6 +52,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | History
+    |--------------------------------------------------------------------------
+    |
+    | Encrypt page data stored in the browser history so pages viewed while
+    | logged in cannot be restored with the Back button after logout. Needs a
+    | secure context (HTTPS, localhost or 127.0.0.1).
+    |
+    */
+
+    'history' => [
+
+        'encrypt' => (bool) env('INERTIA_ENCRYPT_HISTORY', true),
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Testing
     |--------------------------------------------------------------------------
     |

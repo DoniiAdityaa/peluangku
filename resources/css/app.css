@@ -44,6 +44,22 @@
     --color-amber-800: #7a4c12;
     --color-amber-900: #5f3b11;
     --color-amber-950: #3a2208;
+
+    /*
+     * Radius: one scale shared by every screen.
+     * control = inputs, buttons, segmented options (12px)
+     * card    = cards and section cards (20px)
+     * panel   = page shells and large panels (28px)
+     */
+    --radius-control: 0.75rem;
+    --radius-card: 1.25rem;
+    --radius-panel: 1.75rem;
+
+    /* Elevation for cards on the dark canvas. */
+    --shadow-card:
+        inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+        0 18px 40px -24px rgb(0 0 0 / 0.7);
+    --shadow-cta: 0 12px 28px -10px rgb(107 155 209 / 0.45);
 }
 
 /* Token semantik di-resolve pada elemen agar mengikuti light/dark. */

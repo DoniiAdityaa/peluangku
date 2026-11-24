@@ -1,19 +1,19 @@
-import AuthLayoutTemplate from "@/layouts/auth/auth-simple-layout";
-import AuthBrandLayout from "@/layouts/auth/auth-brand-layout";
-import type { AuthBrandVariant } from "@/layouts/auth/auth-brand-layout";
+import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
+import AuthBrandLayout from '@/layouts/auth/auth-brand-layout';
+import type { AuthBrandVariant } from '@/layouts/auth/auth-brand-layout';
 
 export default function AuthLayout({
-    title = "",
-    description = "",
+    title = '',
+    description = '',
     children,
-    variant = "default",
+    variant = 'default',
 }: {
     title?: string;
     description?: string;
     children: React.ReactNode;
-    variant?: "default" | AuthBrandVariant;
+    variant?: 'default' | AuthBrandVariant;
 }) {
-    if (variant !== "default") {
+    if (variant !== 'default') {
         return (
             <AuthBrandLayout
                 title={title}

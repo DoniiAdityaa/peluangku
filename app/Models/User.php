@@ -27,9 +27,22 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $tanggal_lahir
+ * @property list<string>|null $prestasi
+ * @property list<string>|null $organisasi
+ * @property list<string>|null $jenjang_tujuan
+ * @property list<string>|null $lokasi_tujuan
+ * @property string|null $cv_path
+ * @property string|null $transkrip_path
+ * @property Carbon|null $onboarded_at
  */
-#[Fillable(['name', 'email', 'password', 'domisili', 'kampus', 'jurusan', 'pendidikan_terakhir'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
+#[Fillable([
+    'name', 'email', 'password', 'domisili', 'kampus', 'jurusan', 'pendidikan_terakhir',
+    'tanggal_lahir', 'jenis_kelamin', 'no_whatsapp', 'semester', 'ipk', 'prestasi', 'organisasi',
+    'sertifikat_bahasa', 'skor_bahasa', 'jenjang_tujuan', 'lokasi_tujuan', 'jenis_pendanaan',
+    'penghasilan_ortu', 'cv_path', 'cv_name', 'transkrip_path', 'onboarding_method', 'onboarded_at',
+])]
+#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token', 'cv_path', 'transkrip_path'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
@@ -56,6 +69,21 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'tanggal_lahir' => 'date',
+            'ipk' => 'decimal:2',
+            'prestasi' => 'array',
+            'organisasi' => 'array',
+            'jenjang_tujuan' => 'array',
+            'lokasi_tujuan' => 'array',
+            'onboarded_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Whether the user has finished the onboarding profile.
+     */
+    public function hasCompletedOnboarding(): bool
+    {
+        return $this->onboarded_at !== null;
     }
 }

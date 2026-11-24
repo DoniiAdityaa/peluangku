@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Cv\CvParser;
+use App\Services\Cv\SimulatedCvParser;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Simulated until an AI provider is configured.
+        $this->app->bind(CvParser::class, SimulatedCvParser::class);
     }
 
     /**

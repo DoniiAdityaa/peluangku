@@ -1,10 +1,25 @@
-import { Link } from "@inertiajs/react";
-import { ArrowUpRight } from "lucide-react";
-import type { ReactNode } from "react";
-import AuthIllustration from "@/components/auth-illustration";
-import { home } from "@/routes";
+import { Link } from '@inertiajs/react';
+import { ArrowUpRight } from 'lucide-react';
+import type { ReactNode } from 'react';
+import AuthIllustration from '@/components/auth-illustration';
+import { home } from '@/routes';
 
-export type AuthBrandVariant = "register" | "login" | "verification";
+export type AuthBrandVariant =
+    | 'register'
+    | 'login'
+    | 'verification'
+    | 'forgot-password'
+    | 'reset-password'
+    | 'confirm-password'
+    | 'two-factor';
+
+const securityAside = {
+    asideEyebrow: 'Akunmu tetap aman',
+    asideTitle: ['Keamanan dulu,', 'baru melangkah.'] as [string, string],
+    asideDescription:
+        'Kami menjaga akunmu supaya data profil dan dokumen beasiswamu tetap aman.',
+    animation: 'login',
+};
 
 const content: Record<
     AuthBrandVariant,
@@ -17,28 +32,52 @@ const content: Record<
     }
 > = {
     register: {
-        asideEyebrow: "Langkah baru, peluang baru",
-        asideTitle: ["Mimpi besarmu", "punya peluang."],
+        asideEyebrow: 'Langkah baru, peluang baru',
+        asideTitle: ['Mimpi besarmu', 'punya peluang.'],
         asideDescription:
-            "Jelajahi beasiswa dan temukan langkah berikutnya untuk masa depanmu.",
-        eyebrow: "Selamat datang di Peluangku",
-        animation: "register",
+            'Jelajahi beasiswa dan temukan langkah berikutnya untuk masa depanmu.',
+        eyebrow: 'Selamat datang di Peluangku',
+        animation: 'register',
     },
     login: {
-        asideEyebrow: "Peluangmu menanti",
-        asideTitle: ["Lanjutkan langkah", "menuju mimpimu."],
+        asideEyebrow: 'Peluangmu menanti',
+        asideTitle: ['Lanjutkan langkah', 'menuju mimpimu.'],
         asideDescription:
-            "Kembali jelajahi peluang beasiswa dan rencanakan langkah berikutnya bersama Peluangku.",
-        eyebrow: "Senang bertemu kamu lagi",
-        animation: "login",
+            'Kembali jelajahi peluang beasiswa dan rencanakan langkah berikutnya bersama Peluangku.',
+        eyebrow: 'Senang bertemu kamu lagi',
+        animation: 'login',
     },
     verification: {
-        asideEyebrow: "Satu langkah lagi",
-        asideTitle: ["Akunmu hampir", "siap dipakai."],
+        asideEyebrow: 'Satu langkah lagi',
+        asideTitle: ['Akunmu hampir', 'siap dipakai.'],
         asideDescription:
-            "Setelah email terverifikasi, kamu bisa melengkapi profil dan mulai mencari beasiswa yang cocok.",
-        eyebrow: "Verifikasi email",
-        animation: "cari",
+            'Setelah email terverifikasi, kamu bisa melengkapi profil dan mulai mencari beasiswa yang cocok.',
+        eyebrow: 'Verifikasi email',
+        animation: 'cari',
+    },
+    'forgot-password': {
+        asideEyebrow: 'Tenang, bisa diatur ulang',
+        asideTitle: ['Lupa itu wajar,', 'langkahmu lanjut.'],
+        asideDescription:
+            'Kami kirimkan link untuk membuat kata sandi baru ke emailmu.',
+        eyebrow: 'Lupa kata sandi',
+        animation: 'login',
+    },
+    'reset-password': {
+        asideEyebrow: 'Hampir selesai',
+        asideTitle: ['Kata sandi baru,', 'semangat baru.'],
+        asideDescription:
+            'Buat kata sandi yang kuat, lalu lanjutkan pencarian beasiswamu.',
+        eyebrow: 'Atur ulang kata sandi',
+        animation: 'login',
+    },
+    'confirm-password': {
+        ...securityAside,
+        eyebrow: 'Konfirmasi keamanan',
+    },
+    'two-factor': {
+        ...securityAside,
+        eyebrow: 'Verifikasi dua langkah',
     },
 };
 
@@ -46,7 +85,7 @@ export default function AuthBrandLayout({
     title,
     description,
     children,
-    variant = "register",
+    variant = 'register',
 }: {
     title: string;
     description: string;
@@ -57,8 +96,8 @@ export default function AuthBrandLayout({
 
     return (
         <main className="flex min-h-svh items-center justify-center bg-background p-4 text-foreground sm:p-6 lg:p-8">
-            <div className="grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-border bg-card p-2 shadow-sm lg:grid-cols-2 lg:gap-8">
-                <aside className="relative hidden flex-col overflow-hidden rounded-3xl bg-navy-700 p-10 text-white lg:flex">
+            <div className="grid w-full max-w-6xl overflow-hidden rounded-panel border border-border/60 bg-card p-2 shadow-card lg:grid-cols-2 lg:gap-8">
+                <aside className="relative hidden flex-col overflow-hidden rounded-card bg-navy-700 p-10 text-white lg:flex">
                     <Link
                         href={home()}
                         className="inline-flex w-fit items-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"

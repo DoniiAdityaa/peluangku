@@ -7,6 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import {
+    authFieldClass,
+    authStatusClass,
+    authSubmitClass,
+} from '@/lib/auth-styles';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -22,10 +27,7 @@ export default function Login({ status, canResetPassword }: Props) {
             <Head title="Masuk" />
 
             {status && (
-                <div
-                    role="status"
-                    className="mb-6 rounded-xl border border-success/25 bg-success/10 p-4 text-sm leading-relaxed text-success"
-                >
+                <div role="status" className={authStatusClass}>
                     {status}
                 </div>
             )}
@@ -33,6 +35,8 @@ export default function Login({ status, canResetPassword }: Props) {
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
+                // Replace this page in history so Back cannot return to a finished auth step.
+                options={{ replace: true }}
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
@@ -48,7 +52,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     autoFocus
                                     autoComplete="email"
                                     placeholder="nama@email.com"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                     aria-invalid={Boolean(errors.email)}
                                 />
                                 <InputError message={errors.email} />
@@ -62,7 +66,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                     required
                                     autoComplete="current-password"
                                     placeholder="Masukkan kata sandi"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                     aria-invalid={Boolean(errors.password)}
                                 />
                                 <InputError message={errors.password} />
@@ -85,7 +89,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 h-12 w-full rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-px hover:bg-primary/90 hover:shadow-primary/30 active:translate-y-0"
+                                className={authSubmitClass}
                                 disabled={processing}
                                 data-test="login-button"
                             >

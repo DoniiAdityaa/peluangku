@@ -1,16 +1,17 @@
-import { Form, Head, usePage } from "@inertiajs/react";
-import { CheckCircle2, Mail, Send } from "lucide-react";
-import TextLink from "@/components/text-link";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-import { logout } from "@/routes";
-import { send } from "@/routes/verification";
-import type { Auth } from "@/types";
+import { Form, Head, usePage } from '@inertiajs/react';
+import { CheckCircle2, Mail, Send } from 'lucide-react';
+import TextLink from '@/components/text-link';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { authSubmitClass } from '@/lib/auth-styles';
+import { logout } from '@/routes';
+import { send } from '@/routes/verification';
+import type { Auth } from '@/types';
 
 const steps = [
-    "Buka email dari Peluangku di kotak masukmu.",
-    "Klik tombol verifikasi di dalam email tersebut.",
-    "Belum ada? Periksa folder Spam atau Promosi.",
+    'Buka email dari Peluangku di kotak masukmu.',
+    'Klik tombol verifikasi di dalam email tersebut.',
+    'Belum ada? Periksa folder Spam atau Promosi.',
 ];
 
 export default function VerifyEmail({ status }: { status?: string }) {
@@ -20,10 +21,10 @@ export default function VerifyEmail({ status }: { status?: string }) {
         <>
             <Head title="Verifikasi email" />
 
-            {status === "verification-link-sent" && (
+            {status === 'verification-link-sent' && (
                 <div
                     role="status"
-                    className="mb-6 flex items-start gap-3 rounded-xl border border-success/25 bg-success/10 p-4 text-sm leading-relaxed text-success"
+                    className="mb-6 flex items-start gap-3 rounded-control border border-success/25 bg-success/10 p-4 text-sm leading-relaxed text-success"
                 >
                     <CheckCircle2
                         className="mt-0.5 size-5 shrink-0"
@@ -37,7 +38,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
             )}
 
             <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-3 rounded-xl border border-input bg-background/50 px-4 py-3">
+                <div className="flex items-center gap-3 rounded-control border-[1.5px] border-border/70 bg-background/60 px-4 py-3">
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-link">
                         <Mail className="size-4" aria-hidden="true" />
                     </span>
@@ -63,16 +64,16 @@ export default function VerifyEmail({ status }: { status?: string }) {
                             {Object.values(errors).length > 0 && (
                                 <div
                                     role="alert"
-                                    className="rounded-xl border border-destructive/25 bg-destructive/10 p-3 text-sm text-destructive"
+                                    className="rounded-control border border-destructive/25 bg-destructive/10 p-3 text-sm text-destructive"
                                 >
-                                    {Object.values(errors).join(" ")}
+                                    {Object.values(errors).join(' ')}
                                 </div>
                             )}
 
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="mt-2 h-12 w-full rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-px hover:bg-primary/90 hover:shadow-primary/30 active:translate-y-0"
+                                className={authSubmitClass}
                             >
                                 {processing ? (
                                     <Spinner />
@@ -83,12 +84,12 @@ export default function VerifyEmail({ status }: { status?: string }) {
                                     />
                                 )}
                                 {processing
-                                    ? "Mengirim link..."
-                                    : "Kirim ulang email verifikasi"}
+                                    ? 'Mengirim link...'
+                                    : 'Kirim ulang email verifikasi'}
                             </Button>
 
                             <div className="text-center text-sm text-muted-foreground">
-                                Ingin memakai akun lain?{" "}
+                                Ingin memakai akun lain?{' '}
                                 <TextLink href={logout()} as="button">
                                     Keluar
                                 </TextLink>
@@ -102,8 +103,8 @@ export default function VerifyEmail({ status }: { status?: string }) {
 }
 
 VerifyEmail.layout = {
-    variant: "verification",
-    title: "Cek email kamu.",
+    variant: 'verification',
+    title: 'Cek email kamu.',
     description:
-        "Kami sudah mengirim link verifikasi ke alamat di bawah. Verifikasi emailmu untuk melanjutkan ke Peluangku.",
+        'Kami sudah mengirim link verifikasi ke alamat di bawah. Verifikasi emailmu untuk melanjutkan ke Peluangku.',
 };

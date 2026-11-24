@@ -1,58 +1,72 @@
 import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import { store } from '@/routes/password/confirm';
 import {
     index as confirmOptions,
     store as confirmStore,
 } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyConfirmationController';
+import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
+import PasswordInput from '@/components/password-input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import {
+    authFieldClass,
+    authSecondaryClass,
+    authSubmitClass,
+} from '@/lib/auth-styles';
+import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {
     return (
         <>
-            <Head title="Confirm password" />
+            <Head title="Konfirmasi kata sandi" />
 
             <PasskeyVerify
                 routes={{
                     options: confirmOptions(),
                     submit: confirmStore(),
                 }}
-                label="Confirm with passkey"
-                loadingLabel="Confirming..."
-                separator="Or confirm with password"
+                label="Konfirmasi dengan passkey"
+                loadingLabel="Mengonfirmasi..."
+                separator="atau pakai kata sandi"
+                className={authSecondaryClass}
+                separatorClassName="bg-card normal-case"
             />
 
-            <Form {...store.form()} resetOnSuccess={['password']}>
+            <Form
+                {...store.form()}
+                resetOnSuccess={['password']}
+                // Replace this page in history so Back cannot return to a finished auth step.
+                options={{ replace: true }}
+                className="flex flex-col gap-6"
+            >
                 {({ processing, errors }) => (
-                    <div className="space-y-6">
+                    <>
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Kata sandi</Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
-                                placeholder="Password"
+                                required
+                                placeholder="Masukkan kata sandi"
                                 autoComplete="current-password"
                                 autoFocus
+                                className={authFieldClass}
+                                aria-invalid={Boolean(errors.password)}
                             />
-
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="flex items-center">
-                            <Button
-                                className="w-full"
-                                disabled={processing}
-                                data-test="confirm-password-button"
-                            >
-                                {processing && <Spinner />}
-                                Confirm password
-                            </Button>
-                        </div>
-                    </div>
+                        <Button
+                            type="submit"
+                            className={authSubmitClass}
+                            disabled={processing}
+                            data-test="confirm-password-button"
+                        >
+                            {processing && <Spinner />}
+                            {processing ? 'Mengonfirmasi...' : 'Konfirmasi'}
+                        </Button>
+                    </>
                 )}
             </Form>
         </>
@@ -60,7 +74,8 @@ export default function ConfirmPassword() {
 }
 
 ConfirmPassword.layout = {
-    title: 'Confirm password',
+    variant: 'confirm-password',
+    title: 'Konfirmasi dulu, ya.',
     description:
-        'This is a secure area of the application. Please confirm your password before continuing.',
+        'Bagian ini butuh keamanan tambahan. Masukkan kata sandimu untuk melanjutkan.',
 };

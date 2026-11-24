@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { authFieldClass, authSubmitClass } from '@/lib/auth-styles';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
@@ -21,6 +22,8 @@ export default function Register({ passwordRules }: Props) {
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
+                // Replace this page in history so Back cannot return to a finished auth step.
+                options={{ replace: true }}
                 className="flex flex-col gap-6"
             >
                 {({ processing, errors }) => (
@@ -33,11 +36,10 @@ export default function Register({ passwordRules }: Props) {
                                     type="text"
                                     required
                                     autoFocus
-                                    tabIndex={1}
                                     autoComplete="name"
                                     name="name"
                                     placeholder="Masukkan nama lengkapmu"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                 />
                                 <InputError
                                     message={errors.name}
@@ -51,11 +53,10 @@ export default function Register({ passwordRules }: Props) {
                                     id="email"
                                     type="email"
                                     required
-                                    tabIndex={2}
                                     autoComplete="email"
                                     name="email"
                                     placeholder="nama@email.com"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -65,11 +66,10 @@ export default function Register({ passwordRules }: Props) {
                                 <PasswordInput
                                     id="password"
                                     required
-                                    tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
                                     placeholder="Buat kata sandi"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                     passwordrules={passwordRules}
                                 />
                                 <InputError message={errors.password} />
@@ -82,11 +82,10 @@ export default function Register({ passwordRules }: Props) {
                                 <PasswordInput
                                     id="password_confirmation"
                                     required
-                                    tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
                                     placeholder="Ulangi kata sandi"
-                                    className="h-12 rounded-xl bg-background/50"
+                                    className={authFieldClass}
                                     passwordrules={passwordRules}
                                 />
                                 <InputError
@@ -96,8 +95,7 @@ export default function Register({ passwordRules }: Props) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 h-12 w-full rounded-xl font-semibold shadow-lg shadow-primary/20 transition-all hover:-translate-y-px hover:bg-primary/90 hover:shadow-primary/30 active:translate-y-0"
-                                tabIndex={5}
+                                className={authSubmitClass}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -107,9 +105,7 @@ export default function Register({ passwordRules }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Sudah punya akun?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Masuk
-                            </TextLink>
+                            <TextLink href={login()}>Masuk</TextLink>
                         </div>
                     </>
                 )}
