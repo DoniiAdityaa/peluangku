@@ -16,18 +16,18 @@ class ScholarshipFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'Beasiswa '.fake()->unique()->words(2, true),
+            'scholarship_name' => 'Beasiswa '.fake()->unique()->words(2, true),
             'provider' => fake()->company(),
-            'jenjang' => ['S1'],
-            'bidang' => [],
-            'lokasi' => 'Dalam negeri',
-            'wilayah' => null,
-            'pendanaan' => 'Penuh',
-            'ipk_min' => null,
-            'syarat_bahasa' => null,
+            'levels' => ['S1'],
+            'major' => null,
+            'location' => 'Dalam negeri',
+            'region' => null,
+            'funding' => 'Penuh',
+            'min_gpa' => null,
+            'language_requirement' => null,
             'deadline' => today()->addDays(fake()->numberBetween(10, 60)),
             'link' => fake()->url(),
-            'deskripsi' => fake()->sentence(),
+            'description' => fake()->sentence(),
         ];
     }
 

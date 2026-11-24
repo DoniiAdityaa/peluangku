@@ -9,9 +9,9 @@ export type Scholarship = {
     id: number;
     name: string;
     provider: string;
-    jenjang: string[];
-    lokasi: string;
-    pendanaan: string;
+    levels: string[];
+    location: string | null;
+    funding: string | null;
     deadline: string;
     daysLeft: number;
     link: string;
@@ -82,8 +82,8 @@ export default function ScholarshipCard({
                         {scholarship.name}
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">
-                        {scholarship.provider} · {scholarship.jenjang.join('/')}{' '}
-                        · {scholarship.lokasi}
+                        {scholarship.provider} · {scholarship.levels.join('/')}{' '}
+                        · {scholarship.location}
                     </p>
                 </div>
                 <ScoreBadge score={scholarship.score} />

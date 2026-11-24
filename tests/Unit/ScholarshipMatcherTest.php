@@ -21,12 +21,12 @@ class ScholarshipMatcherTest extends TestCase
     private function scholarship(array $attributes = []): Scholarship
     {
         return new Scholarship([
-            'jenjang' => ['S1'],
-            'bidang' => [],
-            'lokasi' => 'Dalam negeri',
-            'wilayah' => null,
-            'pendanaan' => 'Penuh',
-            'ipk_min' => null,
+            'levels' => ['S1'],
+            'major' => null,
+            'location' => 'Dalam negeri',
+            'region' => null,
+            'funding' => 'Penuh',
+            'min_gpa' => null,
             ...$attributes,
         ]);
     }
@@ -35,10 +35,10 @@ class ScholarshipMatcherTest extends TestCase
     {
         $result = (new ScholarshipMatcher)->match(
             $this->user(['jenjang_tujuan' => ['S1'], 'lokasi_tujuan' => ['Dalam negeri'], 'jenis_pendanaan' => 'Penuh', 'ipk' => '3.40']),
-            $this->scholarship(['ipk_min' => '3.00']),
+            $this->scholarship(['min_gpa' => '3.00']),
         );
 
-        // "Semua jurusan" gets 18 of the 25 bidang points.
+        // "Semua jurusan" gets 18 of the 25 major points.
         $this->assertSame(93, $result['score']);
         $this->assertSame(['S1', 'Semua jurusan', 'Dalam negeri', 'IPK cukup', 'Dana penuh'], $result['reasons']);
     }
@@ -47,7 +47,7 @@ class ScholarshipMatcherTest extends TestCase
     {
         $result = (new ScholarshipMatcher)->match(
             $this->user(['jenjang_tujuan' => ['S2'], 'ipk' => '2.80']),
-            $this->scholarship(['ipk_min' => '3.25']),
+            $this->scholarship(['min_gpa' => '3.25']),
         );
 
         $this->assertLessThan(ScholarshipMatcher::RECOMMEND_MIN, $result['score']);
@@ -57,7 +57,7 @@ class ScholarshipMatcherTest extends TestCase
     public function test_regional_scholarships_only_fit_people_living_there(): void
     {
         $matcher = new ScholarshipMatcher;
-        $scholarship = $this->scholarship(['wilayah' => 'Jawa Tengah']);
+        $scholarship = $this->scholarship(['region' => 'Jawa Tengah']);
         $profile = ['jenjang_tujuan' => ['S1'], 'lokasi_tujuan' => ['Dalam negeri']];
 
         $inside = $matcher->match($this->user([...$profile, 'domisili' => 'Semarang, Jawa Tengah']), $scholarship);

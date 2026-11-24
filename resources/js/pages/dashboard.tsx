@@ -224,7 +224,7 @@ function Recommendations({
 }) {
     const [filter, setFilter] = useState('Semua');
     const shown = items
-        .filter((item) => filter === 'Semua' || item.lokasi === filter)
+        .filter((item) => filter === 'Semua' || item.location === filter)
         .slice(0, SHOWN);
 
     return (

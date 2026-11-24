@@ -43,9 +43,9 @@ class DashboardTest extends TestCase
     public function test_dashboard_shows_matching_open_scholarships_best_first(): void
     {
         $user = $this->matchingUser();
-        $best = Scholarship::factory()->create(['name' => 'Cocok', 'jenjang' => ['S2'], 'bidang' => ['Teknologi Informasi'], 'deadline' => today()->addDays(4)]);
-        Scholarship::factory()->create(['name' => 'Kurang cocok', 'jenjang' => ['S1'], 'lokasi' => 'Luar negeri', 'pendanaan' => 'Sebagian', 'ipk_min' => '3.90', 'bidang' => ['Seni dan Budaya']]);
-        Scholarship::factory()->closed()->create(['name' => 'Sudah tutup', 'jenjang' => ['S2']]);
+        $best = Scholarship::factory()->create(['scholarship_name' => 'Cocok', 'levels' => ['S2'], 'major' => 'Teknologi Informasi', 'deadline' => today()->addDays(4)]);
+        Scholarship::factory()->create(['scholarship_name' => 'Kurang cocok', 'levels' => ['S1'], 'location' => 'Luar negeri', 'funding' => 'Sebagian', 'min_gpa' => '3.90', 'major' => 'Seni dan Budaya']);
+        Scholarship::factory()->closed()->create(['scholarship_name' => 'Sudah tutup', 'levels' => ['S2']]);
 
         $this->actingAs($user)
             ->get(route('dashboard'))
@@ -81,7 +81,7 @@ class DashboardTest extends TestCase
     public function test_scholarships_can_be_saved_and_unsaved(): void
     {
         $user = $this->matchingUser();
-        $scholarship = Scholarship::factory()->create(['jenjang' => ['S2']]);
+        $scholarship = Scholarship::factory()->create(['levels' => ['S2']]);
 
         $this->actingAs($user)
             ->from(route('dashboard'))
@@ -90,8 +90,7 @@ class DashboardTest extends TestCase
 
         $this->assertDatabaseHas('fav_user', [
             'user_id' => $user->id,
-            'scholarship_id' => $scholarship->id,
-            'scholarship_name' => $scholarship->name,
+            'scholarships_id' => $scholarship->id,
         ]);
 
         // Saving twice keeps one row.
@@ -103,7 +102,7 @@ class DashboardTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->where('stats.saved', 1)
                 ->where('recommendations.0.saved', true)
-                ->where('saved.0.name', $scholarship->name));
+                ->where('saved.0.name', $scholarship->scholarship_name));
 
         $this->actingAs($user)
             ->delete(route('scholarships.unsave', $scholarship))

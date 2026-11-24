@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FavoriteScholarship;
 use App\Models\Scholarship;
 use App\Services\Scholarships\ScholarshipMatcher;
 use App\Support\ProfileCompleteness;
@@ -18,7 +17,8 @@ class DashboardController extends Controller
     public function __invoke(Request $request, ScholarshipMatcher $matcher): Response
     {
         $user = $request->user()->loadMissing('interests');
-        $savedIds = $user->favoriteScholarships()->whereNotNull('scholarship_id')->pluck('scholarship_id')->all();
+        $saved = $user->favoriteScholarships()->orderBy('deadline')->get();
+        $savedIds = $saved->pluck('id')->all();
         $canMatch = $matcher->canMatch($user);
 
         $matches = $canMatch
@@ -34,11 +34,11 @@ class DashboardController extends Controller
 
         $present = fn (array $match) => [
             'id' => $match['scholarship']->id,
-            'name' => $match['scholarship']->name,
+            'name' => $match['scholarship']->scholarship_name,
             'provider' => $match['scholarship']->provider,
-            'jenjang' => $match['scholarship']->jenjang,
-            'lokasi' => $match['scholarship']->lokasi,
-            'pendanaan' => $match['scholarship']->pendanaan,
+            'levels' => $match['scholarship']->levels ?? [],
+            'location' => $match['scholarship']->location,
+            'funding' => $match['scholarship']->funding,
             'deadline' => $match['scholarship']->deadline->toDateString(),
             'daysLeft' => $match['scholarship']->daysLeft(),
             'link' => $match['scholarship']->link,
@@ -46,8 +46,6 @@ class DashboardController extends Controller
             'reasons' => $match['reasons'],
             'saved' => in_array($match['scholarship']->id, $savedIds, true),
         ];
-
-        $saved = $user->favoriteScholarships()->with('scholarship')->latest()->get();
 
         return Inertia::render('dashboard', [
             'firstName' => str($user->name)->before(' ')->toString(),
@@ -63,16 +61,14 @@ class DashboardController extends Controller
                 ->take(5)
                 ->map($present)
                 ->values(),
-            'saved' => $saved->take(4)->map(fn (FavoriteScholarship $favorite) => [
-                'id' => $favorite->id,
-                'scholarshipId' => $favorite->scholarship_id,
-                'name' => $favorite->scholarship?->name ?? $favorite->scholarship_name ?? 'Beasiswa',
-                'provider' => $favorite->scholarship?->provider,
-                'daysLeft' => ($favorite->scholarship?->deadline ?? $favorite->deadline)
-                    ? (int) today()->diffInDays($favorite->scholarship?->deadline ?? $favorite->deadline, false)
-                    : null,
-                'score' => $favorite->percentage !== null ? (int) round((float) $favorite->percentage) : null,
-                'link' => $favorite->scholarship?->link ?? $favorite->link,
+            'saved' => $saved->take(4)->map(fn (Scholarship $scholarship) => [
+                'id' => $scholarship->id,
+                'scholarshipId' => $scholarship->id,
+                'name' => $scholarship->scholarship_name ?? 'Beasiswa',
+                'provider' => $scholarship->provider,
+                'daysLeft' => $scholarship->deadline ? $scholarship->daysLeft() : null,
+                'score' => $canMatch ? $matcher->match($user, $scholarship)['score'] : null,
+                'link' => $scholarship->link,
             ])->values(),
             'profile' => [
                 ...ProfileCompleteness::for($user),

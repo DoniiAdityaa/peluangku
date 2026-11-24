@@ -16,26 +16,27 @@ class ScholarshipSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach ($this->scholarships() as [$name, $provider, $jenjang, $bidang, $lokasi, $wilayah, $pendanaan, $ipk, $bahasa, $days, $link, $deskripsi]) {
-            Scholarship::query()->updateOrCreate(['name' => $name], [
+        foreach ($this->scholarships() as [$name, $provider, $levels, $majors, $location, $region, $funding, $minGpa, $language, $days, $link, $description]) {
+            Scholarship::query()->updateOrCreate(['scholarship_name' => $name], [
                 'provider' => $provider,
-                'jenjang' => $jenjang,
-                'bidang' => $bidang,
-                'lokasi' => $lokasi,
-                'wilayah' => $wilayah,
-                'pendanaan' => $pendanaan,
-                'ipk_min' => $ipk,
-                'syarat_bahasa' => $bahasa,
+                'levels' => $levels,
+                'major' => $majors === [] ? null : implode(', ', $majors),
+                'location' => $location,
+                'region' => $region,
+                'funding' => $funding,
+                'min_gpa' => $minGpa,
+                'language_requirement' => $language,
                 'deadline' => today()->addDays($days),
                 'link' => $link,
-                'deskripsi' => $deskripsi,
+                'description' => $description,
             ]);
         }
     }
 
     /**
-     * name, provider, jenjang, bidang ([] = semua jurusan), lokasi, wilayah,
-     * pendanaan, IPK minimal, syarat bahasa, deadline (days from now), link, deskripsi.
+     * scholarship_name, provider, levels, majors ([] = all majors), location,
+     * region, funding, minimum GPA, language requirement, deadline (days from
+     * now), link, description.
      *
      * @return list<array{string, string, list<string>, list<string>, string, ?string, string, ?string, ?string, int, string, string}>
      */

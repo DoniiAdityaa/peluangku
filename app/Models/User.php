@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -60,6 +59,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * Get the scholarships this user has favorited.
+     *
+     * @return BelongsToMany<Scholarship, $this>
+     */
+    public function favoriteScholarships(): BelongsToMany
+    {
+        return $this->belongsToMany(Scholarship::class, 'fav_user', 'user_id', 'scholarships_id');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -78,19 +87,6 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'lokasi_tujuan' => 'array',
             'onboarded_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Whether the user has finished the onboarding profile.
-     */
-    /**
-     * Scholarships the user saved.
-     *
-     * @return HasMany<FavoriteScholarship, $this>
-     */
-    public function favoriteScholarships(): HasMany
-    {
-        return $this->hasMany(FavoriteScholarship::class);
     }
 
     /**

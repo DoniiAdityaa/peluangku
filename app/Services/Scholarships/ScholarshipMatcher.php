@@ -8,7 +8,7 @@ use App\Models\User;
 /**
  * Scores how well a scholarship fits a user's profile, from 0 to 100.
  *
- * Weights: jenjang 30, bidang 25, lokasi 15, IPK 15, pendanaan 15.
+ * Weights: level 30, major 25, location 15, GPA 15, funding 15.
  * A field the user has not filled in yet gets about half its weight, so an
  * incomplete profile neither hides nor inflates a scholarship.
  */
@@ -38,56 +38,59 @@ final class ScholarshipMatcher
         $score = 0;
         $reasons = [];
 
-        // Jenjang (30)
-        $jenjang = array_values(array_intersect($user->jenjang_tujuan ?? [], $scholarship->jenjang));
+        // Level (30)
+        $levels = array_values(array_intersect($user->jenjang_tujuan ?? [], $scholarship->levels ?? []));
         if (blank($user->jenjang_tujuan)) {
             $score += 15;
-        } elseif ($jenjang !== []) {
+        } elseif ($levels !== []) {
             $score += 30;
-            $reasons[] = $jenjang[0];
+            $reasons[] = $levels[0];
         }
 
-        // Bidang (25)
+        // Major (25); a blank major means the scholarship is open to everyone.
         $interests = $user->interests->pluck('name')->all();
-        $bidang = array_values(array_intersect($interests, $scholarship->bidang ?? []));
-        if (blank($scholarship->bidang)) {
+        $majors = filled($scholarship->major)
+            ? array_values(array_filter(array_map('trim', explode(',', (string) $scholarship->major))))
+            : [];
+        $matchedMajors = array_values(array_intersect($interests, $majors));
+        if ($majors === []) {
             $score += 18;
             $reasons[] = 'Semua jurusan';
         } elseif ($interests === []) {
             $score += 12;
-        } elseif ($bidang !== []) {
+        } elseif ($matchedMajors !== []) {
             $score += 25;
-            $reasons[] = $bidang[0];
+            $reasons[] = $matchedMajors[0];
         }
 
-        // Lokasi (15), limited to one region when the scholarship says so
-        $outsideRegion = $scholarship->wilayah !== null
-            && ! str_contains(strtolower((string) $user->domisili), strtolower($scholarship->wilayah));
+        // Location (15), limited to one region when the scholarship says so
+        $outsideRegion = $scholarship->region !== null
+            && ! str_contains(strtolower((string) $user->domisili), strtolower($scholarship->region));
         if ($outsideRegion) {
             // Regional scholarships only count for people living there.
         } elseif (blank($user->lokasi_tujuan)) {
             $score += 8;
-        } elseif (in_array($scholarship->lokasi, $user->lokasi_tujuan, true)) {
+        } elseif (in_array($scholarship->location, $user->lokasi_tujuan, true)) {
             $score += 15;
-            $reasons[] = $scholarship->wilayah ?? $scholarship->lokasi;
+            $reasons[] = $scholarship->region ?? $scholarship->location;
         }
 
-        // IPK (15)
-        if ($scholarship->ipk_min === null) {
+        // GPA (15)
+        if ($scholarship->min_gpa === null) {
             $score += 15;
         } elseif ($user->ipk === null) {
             $score += 8;
-        } elseif ((float) $user->ipk >= (float) $scholarship->ipk_min) {
+        } elseif ((float) $user->ipk >= (float) $scholarship->min_gpa) {
             $score += 15;
             $reasons[] = 'IPK cukup';
         }
 
-        // Pendanaan (15)
+        // Funding (15)
         if (blank($user->jenis_pendanaan) || $user->jenis_pendanaan === 'Semua') {
             $score += 15;
-        } elseif ($user->jenis_pendanaan === $scholarship->pendanaan) {
+        } elseif ($user->jenis_pendanaan === $scholarship->funding) {
             $score += 15;
-            $reasons[] = 'Dana '.strtolower($scholarship->pendanaan);
+            $reasons[] = 'Dana '.strtolower((string) $scholarship->funding);
         } else {
             $score += 5;
         }
