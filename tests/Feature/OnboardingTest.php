@@ -181,6 +181,31 @@ class OnboardingTest extends TestCase
             ->assertRedirect(route('onboarding.index'));
     }
 
+    public function test_user_can_skip_onboarding_and_go_to_dashboard(): void
+    {
+        $user = User::factory()->notOnboarded()->create();
+
+        $this->actingAs($user)
+            ->post(route('onboarding.skip'))
+            ->assertRedirect(route('dashboard'));
+
+        $user->refresh();
+
+        $this->assertNotNull($user->onboarded_at);
+        $this->assertSame('skipped', $user->onboarding_method);
+
+        $this->actingAs($user)->get(route('dashboard'))->assertOk();
+    }
+
+    public function test_onboarded_users_cannot_skip_onboarding_again(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('onboarding.skip'))
+            ->assertRedirect(route('dashboard'));
+    }
+
     public function test_required_profile_fields_are_validated(): void
     {
         $user = User::factory()->notOnboarded()->create();

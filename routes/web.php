@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified', 'not-onboarded'])
         Route::post('ai', 'parseCv')->name('ai.parse');
         Route::get('profil', 'profile')->name('profile');
         Route::post('profil', 'store')->name('store');
+        Route::post('lewati', 'skip')->name('skip');
     });
 
 require __DIR__.'/settings.php';

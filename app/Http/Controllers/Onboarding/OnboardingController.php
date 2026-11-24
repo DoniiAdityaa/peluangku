@@ -159,6 +159,25 @@ class OnboardingController extends Controller
     }
 
     /**
+     * Let the user skip onboarding and go straight to the dashboard.
+     *
+     * The profile can still be completed later; onboarding is not shown again.
+     */
+    public function skip(Request $request): RedirectResponse
+    {
+        $request->user()->fill([
+            'onboarding_method' => 'skipped',
+            'onboarded_at' => now(),
+        ])->save();
+
+        $request->session()->forget([self::DRAFT, self::FLAGGED, self::PARSED, self::WELCOME]);
+
+        Inertia::clearHistory();
+
+        return to_route('dashboard');
+    }
+
+    /**
      * Step 4: a short welcome right after onboarding, then on to the dashboard.
      *
      * Shown only once; visiting it again goes straight to the dashboard.
