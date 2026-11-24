@@ -13,7 +13,10 @@ class RedirectIfOnboarded
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()?->hasCompletedOnboarding()) {
+        $user = $request->user();
+
+        // People who skipped may come back to fill in their profile.
+        if ($user?->hasCompletedOnboarding() && ! $user->skippedOnboarding()) {
             return redirect()->route('dashboard');
         }
 

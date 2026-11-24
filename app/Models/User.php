@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -82,6 +83,24 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     /**
      * Whether the user has finished the onboarding profile.
      */
+    /**
+     * Scholarships the user saved.
+     *
+     * @return HasMany<FavoriteScholarship, $this>
+     */
+    public function favoriteScholarships(): HasMany
+    {
+        return $this->hasMany(FavoriteScholarship::class);
+    }
+
+    /**
+     * Whether the user skipped the profile during onboarding.
+     */
+    public function skippedOnboarding(): bool
+    {
+        return $this->onboarding_method === 'skipped';
+    }
+
     public function hasCompletedOnboarding(): bool
     {
         return $this->onboarded_at !== null;

@@ -1,15 +1,21 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FavoriteScholarshipController;
 use App\Http\Controllers\Onboarding\OnboardingController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('onboarding/selesai', [OnboardingController::class, 'done'])->name('onboarding.done');
+
+    Route::post('beasiswa/{scholarship}/simpan', [FavoriteScholarshipController::class, 'store'])->name('scholarships.save');
+    Route::delete('beasiswa/{scholarship}/simpan', [FavoriteScholarshipController::class, 'destroy'])->name('scholarships.unsave');
 });
 
+// Skipped users may come back here to fill their profile in later.
 Route::middleware(['auth', 'verified', 'not-onboarded'])
     ->prefix('onboarding')
     ->name('onboarding.')
@@ -18,9 +24,17 @@ Route::middleware(['auth', 'verified', 'not-onboarded'])
         Route::get('/', 'index')->name('index');
         Route::get('ai', 'ai')->name('ai');
         Route::post('ai', 'parseCv')->name('ai.parse');
+        Route::post('lewati', 'skip')->name('skip');
+    });
+
+// The profile form also serves onboarded users who want to complete their profile.
+Route::middleware(['auth', 'verified'])
+    ->prefix('onboarding')
+    ->name('onboarding.')
+    ->controller(OnboardingController::class)
+    ->group(function () {
         Route::get('profil', 'profile')->name('profile');
         Route::post('profil', 'store')->name('store');
-        Route::post('lewati', 'skip')->name('skip');
     });
 
 require __DIR__.'/settings.php';

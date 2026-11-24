@@ -201,12 +201,12 @@
     --chart-3: #f4b942;
     --chart-4: #60a5fa;
     --chart-5: #4ade80;
-    --sidebar: var(--card);
+    --sidebar: #0e1626;
     --sidebar-foreground: var(--foreground);
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--secondary);
-    --sidebar-accent-foreground: var(--secondary-foreground);
+    --sidebar-accent: #163a5f;
+    --sidebar-accent-foreground: #ffffff;
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
 }

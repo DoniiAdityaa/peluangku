@@ -118,11 +118,15 @@ class OnboardingController extends Controller
 
     /**
      * Save the profile and finish onboarding.
+     *
+     * People who already finished onboarding are only updating their profile,
+     * so they go back to the dashboard instead of the welcome screen.
      */
     public function store(StoreOnboardingProfileRequest $request): RedirectResponse
     {
         $user = $request->user();
         $data = $request->validated();
+        $updating = $user->hasCompletedOnboarding() && ! $user->skippedOnboarding();
 
         if ($request->hasFile('cv')) {
             $this->replaceCv($user, $request->file('cv'));
@@ -142,8 +146,10 @@ class OnboardingController extends Controller
             ...collect($data)->except(['cv', 'transkrip', 'interests'])->all(),
             'prestasi' => array_values($data['prestasi'] ?? []),
             'organisasi' => array_values($data['organisasi'] ?? []),
-            'onboarding_method' => $fromAi ? 'ai' : 'manual',
-            'onboarded_at' => now(),
+            ...$updating ? [] : [
+                'onboarding_method' => $fromAi ? 'ai' : 'manual',
+                'onboarded_at' => now(),
+            ],
         ])->save();
 
         $user->interests()->sync($data['interests']);
@@ -152,6 +158,12 @@ class OnboardingController extends Controller
 
         // Onboarding pages stay in browser history; clear it so Back cannot show them again.
         Inertia::clearHistory();
+
+        if ($updating) {
+            Inertia::flash('toast', ['type' => 'success', 'message' => 'Profil diperbarui.']);
+
+            return to_route('dashboard');
+        }
 
         $request->session()->flash(self::WELCOME, true);
 

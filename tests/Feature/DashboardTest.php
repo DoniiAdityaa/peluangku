@@ -2,26 +2,146 @@
 
 namespace Tests\Feature;
 
+use App\Models\Interest;
+use App\Models\Scholarship;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guests_are_redirected_to_the_login_page()
+    private function matchingUser(): User
     {
-        $response = $this->get(route('dashboard'));
-        $response->assertRedirect(route('login'));
+        $user = User::factory()->create([
+            'name' => 'Rina Putri',
+            'jenjang_tujuan' => ['S2'],
+            'lokasi_tujuan' => ['Dalam negeri'],
+            'jenis_pendanaan' => 'Penuh',
+            'ipk' => '3.50',
+            'domisili' => 'Semarang, Jawa Tengah',
+        ]);
+        $user->interests()->attach(Interest::query()->where('name', 'Teknologi Informasi')->value('id'));
+
+        return $user;
     }
 
-    public function test_authenticated_users_can_visit_the_dashboard()
+    public function test_guests_are_redirected_to_the_login_page(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->get(route('dashboard'))->assertRedirect(route('login'));
+    }
 
-        $response = $this->get(route('dashboard'));
-        $response->assertOk();
+    public function test_authenticated_users_can_visit_the_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('dashboard'))
+            ->assertOk();
+    }
+
+    public function test_dashboard_shows_matching_open_scholarships_best_first(): void
+    {
+        $user = $this->matchingUser();
+        $best = Scholarship::factory()->create(['name' => 'Cocok', 'jenjang' => ['S2'], 'bidang' => ['Teknologi Informasi'], 'deadline' => today()->addDays(4)]);
+        Scholarship::factory()->create(['name' => 'Kurang cocok', 'jenjang' => ['S1'], 'lokasi' => 'Luar negeri', 'pendanaan' => 'Sebagian', 'ipk_min' => '3.90', 'bidang' => ['Seni dan Budaya']]);
+        Scholarship::factory()->closed()->create(['name' => 'Sudah tutup', 'jenjang' => ['S2']]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('dashboard')
+                ->where('firstName', 'Rina')
+                ->where('canMatch', true)
+                ->has('recommendations', 1)
+                ->where('recommendations.0.id', $best->id)
+                ->where('recommendations.0.score', 100)
+                ->where('recommendations.0.daysLeft', 4)
+                ->where('recommendations.0.reasons', ['S2', 'Teknologi Informasi', 'Dalam negeri', 'Dana penuh'])
+                ->where('stats.matches', 1)
+                ->where('stats.urgent', 1)
+                ->where('stats.saved', 0)
+                ->has('deadlines', 1));
+    }
+
+    public function test_skipped_users_are_asked_to_complete_their_profile(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'skipped']);
+        Scholarship::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('canMatch', false)
+                ->has('recommendations', 0)
+                ->where('profile.skipped', true)
+                ->where('profile.missing.0', 'Jenjang tujuan'));
+    }
+
+    public function test_scholarships_can_be_saved_and_unsaved(): void
+    {
+        $user = $this->matchingUser();
+        $scholarship = Scholarship::factory()->create(['jenjang' => ['S2']]);
+
+        $this->actingAs($user)
+            ->from(route('dashboard'))
+            ->post(route('scholarships.save', $scholarship))
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('fav_user', [
+            'user_id' => $user->id,
+            'scholarship_id' => $scholarship->id,
+            'scholarship_name' => $scholarship->name,
+        ]);
+
+        // Saving twice keeps one row.
+        $this->actingAs($user)->post(route('scholarships.save', $scholarship));
+        $this->assertSame(1, $user->favoriteScholarships()->count());
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('stats.saved', 1)
+                ->where('recommendations.0.saved', true)
+                ->where('saved.0.name', $scholarship->name));
+
+        $this->actingAs($user)
+            ->delete(route('scholarships.unsave', $scholarship))
+            ->assertRedirect();
+
+        $this->assertSame(0, $user->favoriteScholarships()->count());
+    }
+
+    public function test_skipped_users_can_return_to_onboarding(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'skipped']);
+
+        $this->actingAs($user)->get(route('onboarding.index'))->assertOk();
+    }
+
+    public function test_onboarded_users_can_update_their_profile_without_the_welcome_screen(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'manual', 'cv_path' => 'cv/x.pdf']);
+
+        $this->actingAs($user)->get(route('onboarding.profile'))->assertOk();
+
+        $this->actingAs($user)
+            ->post(route('onboarding.store'), [
+                'name' => 'Nama Lengkap',
+                'tanggal_lahir' => '2004-05-01',
+                'jenis_kelamin' => 'Perempuan',
+                'no_whatsapp' => '081234567890',
+                'domisili' => 'Semarang, Jawa Tengah',
+                'pendidikan_terakhir' => 'S1',
+                'kampus' => 'Universitas Dian Nuswantoro',
+                'jurusan' => 'Teknik Informatika',
+                'jenjang_tujuan' => ['S2'],
+                'lokasi_tujuan' => ['Luar negeri'],
+                'jenis_pendanaan' => 'Penuh',
+                'interests' => [Interest::query()->value('id')],
+            ])
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSame('manual', $user->fresh()->onboarding_method);
     }
 }
