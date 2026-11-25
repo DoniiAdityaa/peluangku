@@ -158,10 +158,10 @@ export default function OnboardingAi({ result }: { result: Result }) {
                             onDrop={onDrop}
                             className={cn(
                                 'flex w-full cursor-pointer flex-col items-center gap-4 rounded-card border-[1.5px] border-dashed border-border bg-card px-8 py-12 shadow-card transition-colors hover:border-primary focus-visible:border-primary focus-visible:outline-none',
-                                dragging && 'border-primary bg-navy-900/40',
+                                dragging && 'border-primary bg-primary/10',
                             )}
                         >
-                            <span className="flex size-14 items-center justify-center rounded-full bg-navy-700 text-teal-200">
+                            <span className="flex size-14 items-center justify-center rounded-full bg-teal-soft text-teal-ink">
                                 <Upload
                                     className="size-6"
                                     strokeWidth={1.8}
@@ -243,7 +243,7 @@ export default function OnboardingAi({ result }: { result: Result }) {
                                                 />
                                             )}
                                             {active && (
-                                                <span className="size-4 animate-spin rounded-full border-2 border-teal-200 border-t-transparent" />
+                                                <span className="size-4 animate-spin rounded-full border-2 border-teal-ink border-t-transparent" />
                                             )}
                                             {!done && !active && (
                                                 <span className="size-1.5 rounded-full bg-border" />

@@ -43,7 +43,6 @@ type Values = {
     sertifikat_bahasa: string | null;
     skor_bahasa: string | null;
     jenjang_tujuan: string[];
-    lokasi_tujuan: string[];
     jenis_pendanaan: string | null;
     penghasilan_ortu: string | null;
     interests: number[];
@@ -59,7 +58,6 @@ type Props = {
         | 'jenisKelamin'
         | 'jenjangSaatIni'
         | 'jenjangTujuan'
-        | 'lokasiTujuan'
         | 'jenisPendanaan'
         | 'sertifikatBahasa'
         | 'penghasilanOrtu',
@@ -130,12 +128,11 @@ const SECTIONS: Section[] = [
     {
         id: 'beasiswa',
         title: 'Beasiswa yang dicari',
-        description: 'Jenjang, lokasi, pendanaan, bidang minat',
+        description: 'Jenjang, pendanaan, bidang minat',
         icon: Compass,
         tone: 'navy',
         fields: [
             'jenjang_tujuan',
-            'lokasi_tujuan',
             'jenis_pendanaan',
             'interests',
             'penghasilan_ortu',
@@ -174,7 +171,6 @@ export default function OnboardingProfile({
         sertifikat_bahasa: values.sertifikat_bahasa ?? '',
         skor_bahasa: values.skor_bahasa ?? '',
         jenjang_tujuan: values.jenjang_tujuan ?? [],
-        lokasi_tujuan: values.lokasi_tujuan ?? [],
         jenis_pendanaan: values.jenis_pendanaan ?? '',
         penghasilan_ortu: values.penghasilan_ortu ?? '',
         interests: values.interests ?? [],
@@ -309,7 +305,7 @@ export default function OnboardingProfile({
                             'mb-2 flex items-center gap-3.5 px-5 py-4',
                         )}
                     >
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-navy-700 text-teal-200">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-teal-soft text-teal-ink">
                             <Sparkles
                                 className="size-[18px]"
                                 strokeWidth={1.9}
@@ -318,7 +314,7 @@ export default function OnboardingProfile({
                         </span>
                         <p className="text-[13px] leading-relaxed text-muted-foreground">
                             Kolom bertanda{' '}
-                            <span className="font-bold text-teal-200">AI</span>{' '}
+                            <span className="font-bold text-teal-ink">AI</span>{' '}
                             diisi dari CV.
                             {flaggedFields.length > 0 && (
                                 <>
@@ -354,7 +350,7 @@ export default function OnboardingProfile({
                                             pillClass,
                                             section.hasFlag
                                                 ? 'bg-warning/15 text-warning'
-                                                : 'bg-navy-700 text-teal-200',
+                                                : 'bg-teal-soft text-teal-ink',
                                         )}
                                     >
                                         {section.hasFlag ? 'Cek lagi' : 'AI'}
@@ -771,25 +767,6 @@ export default function OnboardingProfile({
                                 }
                                 multiple
                                 invalid={Boolean(errors.jenjang_tujuan)}
-                            />
-                        </Field>
-                        <Field
-                            label="Lokasi"
-                            hint="boleh lebih dari satu"
-                            error={errors.lokasi_tujuan}
-                        >
-                            <ChoiceChips
-                                label="Lokasi"
-                                options={options.lokasiTujuan}
-                                selected={data.lokasi_tujuan}
-                                onToggle={(value) =>
-                                    setData(
-                                        'lokasi_tujuan',
-                                        toggle(data.lokasi_tujuan, value),
-                                    )
-                                }
-                                multiple
-                                invalid={Boolean(errors.lokasi_tujuan)}
                             />
                         </Field>
                         <Field

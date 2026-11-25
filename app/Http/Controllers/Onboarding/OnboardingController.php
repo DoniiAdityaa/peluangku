@@ -95,7 +95,6 @@ class OnboardingController extends Controller
             'sertifikat_bahasa' => $user->sertifikat_bahasa,
             'skor_bahasa' => $user->skor_bahasa,
             'jenjang_tujuan' => $user->jenjang_tujuan ?? [],
-            'lokasi_tujuan' => $user->lokasi_tujuan ?? [],
             'jenis_pendanaan' => $user->jenis_pendanaan,
             'penghasilan_ortu' => $user->penghasilan_ortu,
             'interests' => $user->interests()->pluck('interests.id'),

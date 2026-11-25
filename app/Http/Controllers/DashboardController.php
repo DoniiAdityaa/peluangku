@@ -42,20 +42,22 @@ class DashboardController extends Controller
             'deadline' => $match['scholarship']->deadline->toDateString(),
             'daysLeft' => $match['scholarship']->daysLeft(),
             'link' => $match['scholarship']->link,
+            'description' => $match['scholarship']->description,
+            'image' => $match['scholarship']->image,
             'score' => $match['score'],
             'reasons' => $match['reasons'],
             'saved' => in_array($match['scholarship']->id, $savedIds, true),
         ];
 
         return Inertia::render('dashboard', [
-            'firstName' => str($user->name)->before(' ')->toString(),
             'canMatch' => $canMatch,
+            'totalOpen' => Scholarship::query()->open()->count(),
             'stats' => [
                 'matches' => $matches->where('score', '>=', ScholarshipMatcher::STRONG_MIN)->count(),
                 'urgent' => $matches->filter(fn (array $match) => $match['scholarship']->daysLeft() < 7)->count(),
                 'saved' => $saved->count(),
             ],
-            'recommendations' => $matches->take(12)->map($present)->values(),
+            'recommendations' => $matches->map($present)->values(),
             'deadlines' => $matches
                 ->sortBy(fn (array $match) => $match['scholarship']->deadline)
                 ->take(5)
@@ -69,6 +71,7 @@ class DashboardController extends Controller
                 'daysLeft' => $scholarship->deadline ? $scholarship->daysLeft() : null,
                 'score' => $canMatch ? $matcher->match($user, $scholarship)['score'] : null,
                 'link' => $scholarship->link,
+                'image' => $scholarship->image,
             ])->values(),
             'profile' => [
                 ...ProfileCompleteness::for($user),

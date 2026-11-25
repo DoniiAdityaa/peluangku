@@ -17,7 +17,6 @@ final class ProfileCompleteness
         'jenjang_tujuan' => 'Jenjang tujuan',
         'interests' => 'Bidang minat',
         'ipk' => 'IPK',
-        'lokasi_tujuan' => 'Lokasi studi',
         'jenis_pendanaan' => 'Jenis pendanaan',
         'skor_bahasa' => 'Skor bahasa',
         'domisili' => 'Domisili',
@@ -38,7 +37,18 @@ final class ProfileCompleteness
     ];
 
     /**
-     * @return array{percent: int, filled: int, total: int, missing: list<string>}
+     * The same parts as the onboarding form.
+     */
+    private const SECTIONS = [
+        'Dokumen' => ['cv_path', 'transkrip_path'],
+        'Data diri' => ['name', 'tanggal_lahir', 'jenis_kelamin', 'no_whatsapp', 'domisili'],
+        'Pendidikan' => ['pendidikan_terakhir', 'kampus', 'jurusan', 'semester', 'ipk'],
+        'Prestasi' => ['prestasi', 'organisasi', 'sertifikat_bahasa', 'skor_bahasa'],
+        'Beasiswa' => ['jenjang_tujuan', 'jenis_pendanaan', 'interests', 'penghasilan_ortu'],
+    ];
+
+    /**
+     * @return array{percent: int, filled: int, total: int, missing: list<string>, sections: list<array{label: string, filled: int, total: int}>}
      */
     public static function for(User $user): array
     {
@@ -53,11 +63,22 @@ final class ProfileCompleteness
         $total = count(self::FIELDS);
         $filled = $total - count($missing);
 
+        $sections = [];
+
+        foreach (self::SECTIONS as $label => $fields) {
+            $sections[] = [
+                'label' => $label,
+                'filled' => count(array_filter($fields, fn (string $field) => self::isFilled($user, $field))),
+                'total' => count($fields),
+            ];
+        }
+
         return [
             'percent' => (int) round($filled / $total * 100),
             'filled' => $filled,
             'total' => $total,
             'missing' => $missing,
+            'sections' => $sections,
         ];
     }
 

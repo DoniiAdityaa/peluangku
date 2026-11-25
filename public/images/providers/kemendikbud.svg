@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0C3875"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#4A90E2" stroke-opacity="0.25" stroke-width="2"/>
+  <!-- Tut Wuri Handayani Golden Wings & Torch -->
+  <g fill="#F5A623">
+    <path d="M32 13C33.5 16 35.5 19 35.5 22C35.5 24 34 25.5 32 25.5C30 25.5 28.5 24 28.5 22C28.5 19 30.5 16 32 13Z"/>
+    <path d="M32 26L26 31C21 31 16 28 14 26C16 30 20 35 27 35L32 34L37 35C44 35 48 30 50 26C48 28 43 31 38 31L32 26Z"/>
+    <path d="M30 36H34V42H30V36Z"/>
+    <path d="M22 43H42C42 43 39 46 32 46C25 46 22 43 22 43Z"/>
+  </g>
+  <text x="32" y="54" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6.5" fill="#FFFFFF" letter-spacing="0.8">KEMENDIKBUD</text>
+</svg>
+

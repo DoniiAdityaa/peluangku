@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0A5C2C"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#48BB78" stroke-opacity="0.25" stroke-width="2"/>
+  <!-- Djarum Diamond / Leaf Motif -->
+  <g transform="translate(32, 26)">
+    <polygon points="0,-12 12,0 0,12 -12,0" fill="#E53E3E"/>
+    <circle cx="0" cy="0" r="4.5" fill="#FFFFFF"/>
+    <path d="M-8,-8L8,8M8,-8L-8,8" stroke="#FFFFFF" stroke-width="1.5"/>
+  </g>
+  <text x="32" y="49" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="900" font-size="8" fill="#FFFFFF" letter-spacing="1">DJARUM</text>
+  <text x="32" y="56" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="600" font-size="5" fill="#A7F3D0" letter-spacing="0.5">FOUNDATION</text>
+</svg>
+

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#113F33"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#ECC94B" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Shield & Kujang Motif -->
+  <path d="M32 12L44 17V28C44 36 39 42 32 45C25 42 20 36 20 28V17L32 12Z" fill="#165B4C" stroke="#ECC94B" stroke-width="1.5"/>
+  <path d="M30 19C30 19 33 21 34 25C35 29 32 33 32 37H30V19Z" fill="#ECC94B"/>
+  <circle cx="34" cy="23" r="1.5" fill="#165B4C"/>
+  <circle cx="33" cy="27" r="1.5" fill="#165B4C"/>
+  <circle cx="32" cy="31" r="1.5" fill="#165B4C"/>
+  <text x="32" y="53" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6" fill="#FFFFFF" letter-spacing="0.5">JAWA BARAT</text>
+</svg>
+

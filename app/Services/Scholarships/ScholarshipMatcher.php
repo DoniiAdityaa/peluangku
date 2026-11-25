@@ -8,9 +8,13 @@ use App\Models\User;
 /**
  * Scores how well a scholarship fits a user's profile, from 0 to 100.
  *
- * Weights: level 30, major 25, location 15, GPA 15, funding 15.
- * A field the user has not filled in yet gets about half its weight, so an
- * incomplete profile neither hides nor inflates a scholarship.
+ * Peluangku only covers scholarships in Indonesia, so there is no
+ * domestic/abroad factor. Weights: level 30, major 25, GPA 20, funding 15,
+ * region 10. A field the user has not filled in yet gets about half its
+ * weight, so an incomplete profile neither hides nor inflates a scholarship.
+ *
+ * Level, region and minimum GPA are hard requirements: when the user clearly
+ * misses one, the score is capped below the recommendation threshold.
  */
 final class ScholarshipMatcher
 {
@@ -20,14 +24,17 @@ final class ScholarshipMatcher
     /** Lowest score counted as "cocok" in the dashboard stats. */
     public const STRONG_MIN = 60;
 
+    /** Highest score for a scholarship the user is not eligible for. */
+    public const INELIGIBLE_MAX = 40;
+
     /**
      * Whether the profile has enough to match on at all.
      */
     public function canMatch(User $user): bool
     {
         return filled($user->jenjang_tujuan)
-            || filled($user->lokasi_tujuan)
-            || $user->interests->isNotEmpty();
+            || $user->interests->isNotEmpty()
+            || $user->ipk !== null;
     }
 
     /**
@@ -37,6 +44,7 @@ final class ScholarshipMatcher
     {
         $score = 0;
         $reasons = [];
+        $eligible = true;
 
         // Level (30)
         $levels = array_values(array_intersect($user->jenjang_tujuan ?? [], $scholarship->levels ?? []));
@@ -45,6 +53,8 @@ final class ScholarshipMatcher
         } elseif ($levels !== []) {
             $score += 30;
             $reasons[] = $levels[0];
+        } else {
+            $eligible = false;
         }
 
         // Major (25); a blank major means the scholarship is open to everyone.
@@ -63,26 +73,16 @@ final class ScholarshipMatcher
             $reasons[] = $matchedMajors[0];
         }
 
-        // Location (15), limited to one region when the scholarship says so
-        $outsideRegion = $scholarship->region !== null
-            && ! str_contains(strtolower((string) $user->domisili), strtolower($scholarship->region));
-        if ($outsideRegion) {
-            // Regional scholarships only count for people living there.
-        } elseif (blank($user->lokasi_tujuan)) {
-            $score += 8;
-        } elseif (in_array($scholarship->location, $user->lokasi_tujuan, true)) {
-            $score += 15;
-            $reasons[] = $scholarship->region ?? $scholarship->location;
-        }
-
-        // GPA (15)
+        // GPA (20)
         if ($scholarship->min_gpa === null) {
-            $score += 15;
+            $score += 20;
         } elseif ($user->ipk === null) {
-            $score += 8;
+            $score += 10;
         } elseif ((float) $user->ipk >= (float) $scholarship->min_gpa) {
-            $score += 15;
+            $score += 20;
             $reasons[] = 'IPK cukup';
+        } else {
+            $eligible = false;
         }
 
         // Funding (15)
@@ -95,6 +95,22 @@ final class ScholarshipMatcher
             $score += 5;
         }
 
-        return ['score' => min($score, 100), 'reasons' => $reasons];
+        // Region (10): national scholarships fit everyone, regional ones only
+        // people who live in that region.
+        if ($scholarship->region === null) {
+            $score += 10;
+        } elseif (blank($user->domisili)) {
+            $score += 5;
+        } elseif (str_contains(strtolower($user->domisili), strtolower($scholarship->region))) {
+            $score += 10;
+            $reasons[] = $scholarship->region;
+        } else {
+            $eligible = false;
+        }
+
+        return [
+            'score' => $eligible ? min($score, 100) : min($score, self::INELIGIBLE_MAX),
+            'reasons' => $reasons,
+        ];
     }
 }

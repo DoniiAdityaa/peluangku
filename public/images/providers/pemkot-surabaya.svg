@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0F2D4A"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#38BDF8" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Shark & Crocodile Monument Shield -->
+  <path d="M32 12L44 17V28C44 36 39 42 32 45C25 42 20 36 20 28V17L32 12Z" fill="#0C4A6E" stroke="#38BDF8" stroke-width="1.5"/>
+  <path d="M28 20C30 22 32 25 32 28C32 31 30 33 28 35C33 34 37 30 37 25C37 21 34 20 28 20Z" fill="#38BDF8"/>
+  <text x="32" y="53" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6.5" fill="#FFFFFF" letter-spacing="0.5">SURABAYA</text>
+</svg>
+

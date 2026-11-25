@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#1E293B"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#F59E0B" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Monas Emblem -->
+  <path d="M32 12L44 17V28C44 36 39 42 32 45C25 42 20 36 20 28V17L32 12Z" fill="#0F172A" stroke="#F59E0B" stroke-width="1.5"/>
+  <path d="M32 18L33.5 21H30.5L32 18Z" fill="#F59E0B"/>
+  <rect x="31" y="21" width="2" height="11" fill="#FFFFFF"/>
+  <rect x="27" y="32" width="10" height="3" rx="1" fill="#FFFFFF"/>
+  <text x="32" y="53" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6.5" fill="#FFFFFF" letter-spacing="0.5">DKI JAKARTA</text>
+</svg>
+

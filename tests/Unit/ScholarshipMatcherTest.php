@@ -34,13 +34,13 @@ class ScholarshipMatcherTest extends TestCase
     public function test_a_full_fit_scores_close_to_the_top(): void
     {
         $result = (new ScholarshipMatcher)->match(
-            $this->user(['jenjang_tujuan' => ['S1'], 'lokasi_tujuan' => ['Dalam negeri'], 'jenis_pendanaan' => 'Penuh', 'ipk' => '3.40']),
+            $this->user(['jenjang_tujuan' => ['S1'], 'jenis_pendanaan' => 'Penuh', 'ipk' => '3.40']),
             $this->scholarship(['min_gpa' => '3.00']),
         );
 
         // "Semua jurusan" gets 18 of the 25 major points.
         $this->assertSame(93, $result['score']);
-        $this->assertSame(['S1', 'Semua jurusan', 'Dalam negeri', 'IPK cukup', 'Dana penuh'], $result['reasons']);
+        $this->assertSame(['S1', 'Semua jurusan', 'IPK cukup', 'Dana penuh'], $result['reasons']);
     }
 
     public function test_a_low_ipk_and_wrong_level_lower_the_score(): void
@@ -58,12 +58,13 @@ class ScholarshipMatcherTest extends TestCase
     {
         $matcher = new ScholarshipMatcher;
         $scholarship = $this->scholarship(['region' => 'Jawa Tengah']);
-        $profile = ['jenjang_tujuan' => ['S1'], 'lokasi_tujuan' => ['Dalam negeri']];
+        $profile = ['jenjang_tujuan' => ['S1']];
 
         $inside = $matcher->match($this->user([...$profile, 'domisili' => 'Semarang, Jawa Tengah']), $scholarship);
         $outside = $matcher->match($this->user([...$profile, 'domisili' => 'Bandung, Jawa Barat']), $scholarship);
 
         $this->assertContains('Jawa Tengah', $inside['reasons']);
-        $this->assertSame(15, $inside['score'] - $outside['score']);
+        $this->assertGreaterThanOrEqual(ScholarshipMatcher::RECOMMEND_MIN, $inside['score']);
+        $this->assertLessThanOrEqual(ScholarshipMatcher::INELIGIBLE_MAX, $outside['score']);
     }
 }

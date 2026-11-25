@@ -1,4 +1,5 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import BrandLogo from '@/components/brand-logo';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
@@ -23,13 +24,7 @@ export function AppSidebarHeader({
             {breadcrumbs.length > 0 ? (
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             ) : (
-                <img
-                    src="/images/brand/svg/peluangku-logo-putih.svg"
-                    alt="Peluangku"
-                    width="4998"
-                    height="1116"
-                    className="h-auto w-28"
-                />
+                <BrandLogo className="w-28" />
             )}
         </header>
     );

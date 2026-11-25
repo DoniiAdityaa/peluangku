@@ -5,10 +5,10 @@ export type Tone = 'blue' | 'teal' | 'amber' | 'green' | 'navy';
 
 const tones: Record<Tone, string> = {
     blue: 'bg-primary/15 text-primary',
-    teal: 'bg-teal-400/15 text-teal-300',
-    amber: 'bg-amber-400/15 text-amber-300',
+    teal: 'bg-teal-400/15 text-teal-ink',
+    amber: 'bg-amber-400/15 text-amber-ink',
     green: 'bg-success/15 text-success',
-    navy: 'bg-navy-300/15 text-navy-200',
+    navy: 'bg-navy-300/15 text-navy-ink',
 };
 
 /** Round tinted icon used in card and section headers. */

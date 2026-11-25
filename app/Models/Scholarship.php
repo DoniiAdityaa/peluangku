@@ -25,11 +25,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $min_gpa
  * @property string|null $language_requirement
  * @property string|null $description
+ * @property string|null $image
  */
 #[Fillable([
     'scholarship_name', 'link', 'percentage', 'deadline', 'major',
     'provider', 'levels', 'location', 'region', 'funding', 'min_gpa',
-    'language_requirement', 'description',
+    'language_requirement', 'description', 'image',
 ])]
 class Scholarship extends Model
 {

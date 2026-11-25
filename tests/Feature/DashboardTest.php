@@ -18,7 +18,6 @@ class DashboardTest extends TestCase
         $user = User::factory()->create([
             'name' => 'Rina Putri',
             'jenjang_tujuan' => ['S2'],
-            'lokasi_tujuan' => ['Dalam negeri'],
             'jenis_pendanaan' => 'Penuh',
             'ipk' => '3.50',
             'domisili' => 'Semarang, Jawa Tengah',
@@ -44,20 +43,19 @@ class DashboardTest extends TestCase
     {
         $user = $this->matchingUser();
         $best = Scholarship::factory()->create(['scholarship_name' => 'Cocok', 'levels' => ['S2'], 'major' => 'Teknologi Informasi', 'deadline' => today()->addDays(4)]);
-        Scholarship::factory()->create(['scholarship_name' => 'Kurang cocok', 'levels' => ['S1'], 'location' => 'Luar negeri', 'funding' => 'Sebagian', 'min_gpa' => '3.90', 'major' => 'Seni dan Budaya']);
+        Scholarship::factory()->create(['scholarship_name' => 'Kurang cocok', 'levels' => ['S1'], 'region' => 'Papua', 'funding' => 'Sebagian', 'min_gpa' => '3.90', 'major' => 'Seni dan Budaya']);
         Scholarship::factory()->closed()->create(['scholarship_name' => 'Sudah tutup', 'levels' => ['S2']]);
 
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertInertia(fn (Assert $page) => $page
                 ->component('dashboard')
-                ->where('firstName', 'Rina')
                 ->where('canMatch', true)
                 ->has('recommendations', 1)
                 ->where('recommendations.0.id', $best->id)
                 ->where('recommendations.0.score', 100)
                 ->where('recommendations.0.daysLeft', 4)
-                ->where('recommendations.0.reasons', ['S2', 'Teknologi Informasi', 'Dalam negeri', 'Dana penuh'])
+                ->where('recommendations.0.reasons', ['S2', 'Teknologi Informasi', 'Dana penuh'])
                 ->where('stats.matches', 1)
                 ->where('stats.urgent', 1)
                 ->where('stats.saved', 0)
@@ -135,7 +133,6 @@ class DashboardTest extends TestCase
                 'kampus' => 'Universitas Dian Nuswantoro',
                 'jurusan' => 'Teknik Informatika',
                 'jenjang_tujuan' => ['S2'],
-                'lokasi_tujuan' => ['Luar negeri'],
                 'jenis_pendanaan' => 'Penuh',
                 'interests' => [Interest::query()->value('id')],
             ])

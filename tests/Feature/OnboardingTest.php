@@ -33,7 +33,6 @@ class OnboardingTest extends TestCase
             'prestasi' => ['Juara 1 lomba'],
             'organisasi' => [],
             'jenjang_tujuan' => ['S2'],
-            'lokasi_tujuan' => ['Luar negeri'],
             'jenis_pendanaan' => 'Penuh',
             'interests' => [Interest::query()->value('id')],
         ];
@@ -215,7 +214,7 @@ class OnboardingTest extends TestCase
             ->assertSessionHasErrors([
                 'name', 'tanggal_lahir', 'jenis_kelamin', 'no_whatsapp', 'domisili',
                 'pendidikan_terakhir', 'kampus', 'jurusan', 'jenjang_tujuan',
-                'lokasi_tujuan', 'jenis_pendanaan', 'interests', 'cv',
+                'jenis_pendanaan', 'interests', 'cv',
             ]);
     }
 }

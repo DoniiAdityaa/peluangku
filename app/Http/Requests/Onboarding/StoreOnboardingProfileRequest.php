@@ -41,8 +41,6 @@ class StoreOnboardingProfileRequest extends FormRequest
 
             'jenjang_tujuan' => ['required', 'array', 'min:1'],
             'jenjang_tujuan.*' => [Rule::in(OnboardingOptions::JENJANG_TUJUAN)],
-            'lokasi_tujuan' => ['required', 'array', 'min:1'],
-            'lokasi_tujuan.*' => [Rule::in(OnboardingOptions::LOKASI_TUJUAN)],
             'jenis_pendanaan' => ['required', Rule::in(OnboardingOptions::JENIS_PENDANAAN)],
             'interests' => ['required', 'array', 'min:1'],
             'interests.*' => ['integer', 'exists:interests,id'],
@@ -68,7 +66,6 @@ class StoreOnboardingProfileRequest extends FormRequest
             'ipk' => 'IPK',
             'skor_bahasa' => 'skor',
             'jenjang_tujuan' => 'jenjang tujuan',
-            'lokasi_tujuan' => 'lokasi',
             'jenis_pendanaan' => 'jenis pendanaan',
             'interests' => 'bidang minat',
             'penghasilan_ortu' => 'penghasilan orang tua',
@@ -83,7 +80,6 @@ class StoreOnboardingProfileRequest extends FormRequest
         return [
             'no_whatsapp.regex' => 'Nomor WhatsApp tidak valid. Contoh: 081234567890.',
             'jenjang_tujuan.required' => 'Pilih minimal satu jenjang tujuan.',
-            'lokasi_tujuan.required' => 'Pilih minimal satu lokasi.',
             'interests.required' => 'Pilih minimal satu bidang minat.',
             'cv.required' => 'Unggah CV kamu dulu.',
         ];

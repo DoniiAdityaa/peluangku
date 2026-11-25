@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0F243A"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#ECC94B" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Tanoto Starburst / TELADAN Compass -->
+  <g transform="translate(32, 26)">
+    <path d="M0 -14L3 -4L14 0L3 4L0 14L-3 4L-14 0L-3 -4Z" fill="#ECC94B"/>
+    <path d="M0 -10L2 -3L10 0L2 3L0 10L-2 3L-10 0L-2 -3Z" fill="#FAF089"/>
+    <circle cx="0" cy="0" r="2.5" fill="#0F243A"/>
+  </g>
+  <text x="32" y="49" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="900" font-size="8.5" fill="#FFFFFF" letter-spacing="1">TANOTO</text>
+  <text x="32" y="56" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="600" font-size="5" fill="#ECC94B" letter-spacing="0.5">FOUNDATION</text>
+</svg>
+
