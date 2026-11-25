@@ -1,418 +1,177 @@
-import { Form, Head, router, usePage } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
-import { Plus, X } from 'lucide-react';
-import * as React from 'react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
+import {
+    ArrowRight,
+    CircleCheck,
+    FolderOpen,
+    Mail,
+    TriangleAlert,
+    UserRound,
+} from 'lucide-react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
-import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
+import Field from '@/components/form/field';
+import SettingsCard from '@/components/settings/settings-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { edit } from '@/routes/profile';
-import type { Auth } from '@/types';
+import { Spinner } from '@/components/ui/spinner';
+import { cardClass, fieldClass, primaryButtonClass } from '@/lib/ui';
+import { cn } from '@/lib/utils';
+import { profile as accountProfile } from '@/routes/account';
 import { send } from '@/routes/verification';
 
-type Interest = {
-    id: number;
-    name: string;
-};
-
-type PageProps = {
-    auth: Auth;
-    availableInterests: Interest[];
-    userInterests: Interest[];
-};
-
-const OTHER_OPTION = '__other__';
-
-const cities = [
-    'Jakarta',
-    'Surabaya',
-    'Bandung',
-    'Medan',
-    'Semarang',
-    'Makassar',
-    'Palembang',
-    'Yogyakarta',
-    'Denpasar',
-    'Balikpapan',
-    'Samarinda',
-    'Malang',
-    'Tangerang',
-    'Bekasi',
-    'Depok',
-    'Bogor',
-    'Batam',
-    'Pekanbaru',
-    'Padang',
-    'Bandar Lampung',
-    'Pontianak',
-    'Banjarmasin',
-    'Manado',
-    'Jayapura',
-];
-
-const campuses = [
-    'Universitas Indonesia',
-    'Universitas Gadjah Mada',
-    'Institut Teknologi Bandung',
-    'Institut Pertanian Bogor',
-    'Institut Teknologi Sepuluh Nopember',
-    'Universitas Airlangga',
-    'Universitas Diponegoro',
-    'Universitas Padjadjaran',
-    'Universitas Brawijaya',
-    'Universitas Hasanuddin',
-    'Universitas Sebelas Maret',
-    'Universitas Negeri Yogyakarta',
-    'Universitas Pendidikan Indonesia',
-    'Universitas Sumatera Utara',
-    'Universitas Andalas',
-    'Universitas Bina Nusantara',
-    'Universitas Telkom',
-    'Universitas Terbuka',
-];
-
-const majors = [
-    'Akuntansi',
-    'Administrasi Bisnis',
-    'Agribisnis',
-    'Arsitektur',
-    'Biologi',
-    'Ekonomi',
-    'Farmasi',
-    'Ilmu Hukum',
-    'Ilmu Komunikasi',
-    'Ilmu Politik',
-    'Kedokteran',
-    'Keperawatan',
-    'Manajemen',
-    'Pendidikan',
-    'Psikologi',
-    'Sistem Informasi',
-    'Teknik Elektro',
-    'Teknik Industri',
-    'Teknik Informatika',
-    'Teknik Sipil',
-];
-
-const educationLevels = [
-    'SMA Sederajat',
-    'Diploma 1 (D1)',
-    'Diploma 2 (D2)',
-    'Diploma 3 (D3)',
-    'Diploma 4 (D4)/Sarjana Terapan',
-    'Sarjana (S1)',
-    'Magister (S2)',
-    'Doktor (S3)',
-];
-
-function ProfileSelectField({
-    name,
-    label,
-    options,
-    defaultValue,
-    error,
-}: {
-    name: string;
-    label: string;
-    options: string[];
-    defaultValue: string | null | undefined;
-    error?: string;
-}) {
-    const isKnownValue = defaultValue ? options.includes(defaultValue) : true;
-    const [selection, setSelection] = React.useState(
-        isKnownValue ? (defaultValue ?? '') : OTHER_OPTION,
-    );
-    const [customValue, setCustomValue] = React.useState(
-        isKnownValue ? '' : (defaultValue ?? ''),
-    );
-
-    return (
-        <div className="grid gap-2">
-            <Label htmlFor={name}>{label}</Label>
-            <Select
-                value={selection}
-                onValueChange={setSelection}
-                name={selection === OTHER_OPTION ? undefined : name}
-                required
-            >
-                <SelectTrigger id={name} className="mt-1 w-full">
-                    <SelectValue placeholder={`Pilih ${label.toLowerCase()}`} />
-                </SelectTrigger>
-                <SelectContent>
-                    {options.map((option) => (
-                        <SelectItem key={option} value={option}>
-                            {option}
-                        </SelectItem>
-                    ))}
-                    {name !== 'pendidikan_terakhir' && (
-                        <SelectItem value={OTHER_OPTION}>Lainnya</SelectItem>
-                    )}
-                </SelectContent>
-            </Select>
-            {selection === OTHER_OPTION && (
-                <Input
-                    id={`${name}_custom`}
-                    value={customValue}
-                    onChange={(event) => setCustomValue(event.target.value)}
-                    name={name}
-                    required
-                    placeholder={`Masukkan ${label.toLowerCase()}`}
-                />
-            )}
-            <InputError className="mt-2" message={error} />
-        </div>
-    );
-}
-
-export default function Profile({
+/** Settings › Akun: name and email, a pointer to profile data, delete account. */
+export default function AccountSettings({
     mustVerifyEmail,
     status,
 }: {
     mustVerifyEmail: boolean;
     status?: string;
 }) {
-    const { auth, availableInterests, userInterests } =
-        usePage<PageProps>().props;
-    const [updatingInterest, setUpdatingInterest] = React.useState(false);
-    const [interestError, setInterestError] = React.useState<string>();
-
-    const addInterest = (interestId: string) => {
-        setInterestError(undefined);
-        setUpdatingInterest(true);
-        router.post(
-            '/settings/profile/interests',
-            { interest_id: Number(interestId) },
-            {
-                preserveScroll: true,
-                onError: (errors) => {
-                    setInterestError(Object.values(errors)[0]);
-                },
-                onFinish: () => setUpdatingInterest(false),
-            },
-        );
-    };
-
-    const removeInterest = (interestId: number) => {
-        setInterestError(undefined);
-        setUpdatingInterest(true);
-        router.delete(`/settings/profile/interests/${interestId}`, {
-            preserveScroll: true,
-            onError: (errors) => {
-                setInterestError(Object.values(errors)[0]);
-            },
-            onFinish: () => setUpdatingInterest(false),
-        });
-    };
+    const { auth } = usePage().props;
+    const user = auth.user;
+    const verified = user?.email_verified_at !== null;
 
     return (
         <>
-            <Head title="Profile settings" />
+            <Head title="Pengaturan akun" />
 
-            <h1 className="sr-only">Profile settings</h1>
-
-            <div className="space-y-6">
-                <Heading
-                    variant="small"
-                    title="Profile"
-                    description="Update your name and email address"
-                />
-
+            <SettingsCard
+                icon={UserRound}
+                title="Informasi akun"
+                description="Nama dan email yang dipakai untuk masuk."
+            >
                 <Form
                     {...ProfileController.update.form()}
-                    options={{
-                        preserveScroll: true,
-                    }}
-                    className="space-y-6"
+                    options={{ preserveScroll: true }}
+                    className="flex flex-col gap-5"
                 >
                     {({ processing, errors }) => (
                         <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-
+                            <Field id="name" label="Nama" error={errors.name}>
                                 <Input
                                     id="name"
-                                    className="mt-1 block w-full"
-                                    defaultValue={auth.user.name}
                                     name="name"
+                                    defaultValue={user?.name}
                                     required
                                     autoComplete="name"
-                                    placeholder="Full name"
+                                    className={fieldClass}
                                 />
+                            </Field>
 
-                                <InputError
-                                    className="mt-2"
-                                    message={errors.name}
-                                />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-
+                            <Field
+                                id="email"
+                                label="Email"
+                                error={errors.email}
+                            >
                                 <Input
                                     id="email"
                                     type="email"
-                                    className="mt-1 block w-full"
-                                    defaultValue={auth.user.email}
                                     name="email"
+                                    defaultValue={user?.email}
                                     required
                                     autoComplete="username"
-                                    placeholder="Email address"
+                                    className={fieldClass}
                                 />
+                            </Field>
 
-                                <InputError
-                                    className="mt-2"
-                                    message={errors.email}
-                                />
-                            </div>
-
-                            <ProfileSelectField
-                                name="domisili"
-                                label="Domisili"
-                                options={cities}
-                                defaultValue={auth.user.domisili}
-                                error={errors.domisili}
-                            />
-
-                            <ProfileSelectField
-                                name="kampus"
-                                label="Kampus"
-                                options={campuses}
-                                defaultValue={auth.user.kampus}
-                                error={errors.kampus}
-                            />
-
-                            <ProfileSelectField
-                                name="jurusan"
-                                label="Jurusan"
-                                options={majors}
-                                defaultValue={auth.user.jurusan}
-                                error={errors.jurusan}
-                            />
-
-                            <ProfileSelectField
-                                name="pendidikan_terakhir"
-                                label="Pendidikan Terakhir"
-                                options={educationLevels}
-                                defaultValue={auth.user.pendidikan_terakhir}
-                                error={errors.pendidikan_terakhir}
-                            />
-
-                            <div className="grid gap-2">
-                                <Label>Bidang Minat</Label>
-                                <div className="flex flex-wrap items-center gap-2">
-                                    {userInterests.map((interest) => (
-                                        <Button
-                                            key={interest.id}
-                                            type="button"
-                                            variant="outline"
-                                            disabled={updatingInterest}
-                                            onClick={() =>
-                                                removeInterest(interest.id)
-                                            }
-                                            aria-label={`Hapus bidang minat ${interest.name}`}
-                                        >
-                                            {interest.name}
-                                            <X aria-hidden="true" />
-                                        </Button>
-                                    ))}
-                                    <Select
-                                        value=""
-                                        onValueChange={addInterest}
-                                        disabled={updatingInterest}
-                                    >
-                                        <SelectTrigger
-                                            aria-label="Tambah bidang minat"
-                                            className="size-9 min-w-9 justify-center p-0"
-                                        >
-                                            <Plus aria-hidden="true" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableInterests
-                                                .filter(
-                                                    (interest) =>
-                                                        !userInterests.some(
-                                                            (selected) =>
-                                                                selected.id ===
-                                                                interest.id,
-                                                        ),
-                                                )
-                                                .map((interest) => (
-                                                    <SelectItem
-                                                        key={interest.id}
-                                                        value={String(
-                                                            interest.id,
-                                                        )}
-                                                    >
-                                                        {interest.name}
-                                                    </SelectItem>
-                                                ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <InputError
-                                    className="mt-2"
-                                    message={interestError}
-                                />
-                            </div>
-
-                            {mustVerifyEmail &&
-                                auth.user.email_verified_at === null && (
+                            {mustVerifyEmail && (
+                                <div
+                                    className={cn(
+                                        'flex items-start gap-2.5 rounded-control p-3.5 text-sm',
+                                        verified
+                                            ? 'bg-success/10 text-success'
+                                            : 'bg-warning/10 text-warning',
+                                    )}
+                                >
+                                    {verified ? (
+                                        <CircleCheck
+                                            className="mt-0.5 size-4 shrink-0"
+                                            aria-hidden="true"
+                                        />
+                                    ) : (
+                                        <Mail
+                                            className="mt-0.5 size-4 shrink-0"
+                                            aria-hidden="true"
+                                        />
+                                    )}
                                     <div>
-                                        <p className="-mt-4 text-sm text-muted-foreground">
-                                            Your email address is unverified.{' '}
-                                            <Link
-                                                href={send()}
-                                                as="button"
-                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                            >
-                                                Click here to re-send the
-                                                verification email.
-                                            </Link>
-                                        </p>
-
-                                        {status ===
-                                            'verification-link-sent' && (
-                                            <div className="mt-2 text-sm font-medium text-green-600">
-                                                A new verification link has been
-                                                sent to your email address.
-                                            </div>
+                                        {verified ? (
+                                            'Email sudah terverifikasi.'
+                                        ) : (
+                                            <>
+                                                Email belum terverifikasi.{' '}
+                                                <Link
+                                                    href={send()}
+                                                    as="button"
+                                                    className="cursor-pointer font-semibold underline underline-offset-4"
+                                                >
+                                                    Kirim ulang link verifikasi
+                                                </Link>
+                                                {status ===
+                                                    'verification-link-sent' && (
+                                                    <p className="mt-1 font-medium">
+                                                        Link baru sudah dikirim
+                                                        ke emailmu.
+                                                    </p>
+                                                )}
+                                            </>
                                         )}
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                            <div className="flex items-center gap-4">
+                            <div>
                                 <Button
+                                    type="submit"
                                     disabled={processing}
                                     data-test="update-profile-button"
+                                    className={primaryButtonClass}
                                 >
-                                    Save
+                                    {processing && <Spinner />}
+                                    Simpan
                                 </Button>
                             </div>
                         </>
                     )}
                 </Form>
-            </div>
+            </SettingsCard>
 
-            <DeleteUser />
+            <Link
+                href={accountProfile()}
+                className={cn(
+                    cardClass,
+                    'group flex items-center gap-4 p-5 transition-colors hover:border-primary/40',
+                )}
+            >
+                <span
+                    aria-hidden="true"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full bg-teal-soft text-teal-ink"
+                >
+                    <FolderOpen className="size-[18px]" strokeWidth={1.9} />
+                </span>
+                <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">
+                        Data diri dan dokumen
+                    </span>
+                    <span className="block text-sm text-muted-foreground">
+                        Kampus, jurusan, IPK, minat, CV, dan transkrip ada di
+                        Profil & Dokumen.
+                    </span>
+                </span>
+                <ArrowRight
+                    className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                    aria-hidden="true"
+                />
+            </Link>
+
+            <SettingsCard
+                icon={TriangleAlert}
+                title="Hapus akun"
+                description="Semua data, profil, dan beasiswa tersimpan akan dihapus permanen."
+                danger
+            >
+                <DeleteUser />
+            </SettingsCard>
         </>
     );
 }
-
-Profile.layout = {
-    breadcrumbs: [
-        {
-            title: 'Profile settings',
-            href: edit(),
-        },
-    ],
-};

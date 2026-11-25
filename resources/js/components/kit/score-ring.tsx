@@ -10,10 +10,13 @@ const SIZES = {
 export default function ScoreRing({
     score,
     size = 'md',
+    caption = 'cocok',
     className,
 }: {
     score: number;
     size?: keyof typeof SIZES;
+    /** Small word under the number. */
+    caption?: string;
     className?: string;
 }) {
     const { box, stroke, text, label } = SIZES[size];
@@ -60,7 +63,7 @@ export default function ScoreRing({
                 </span>
                 {label && (
                     <span className="mt-0.5 text-[9px] font-semibold tracking-wide text-teal-ink/80 uppercase">
-                        cocok
+                        {caption}
                     </span>
                 )}
             </span>

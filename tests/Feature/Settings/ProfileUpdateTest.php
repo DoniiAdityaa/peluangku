@@ -31,10 +31,8 @@ class ProfileUpdateTest extends TestCase
             ->patch(route('profile.update'), [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
-                'domisili' => 'Bandung',
+                // Profile data is ignored here; it belongs to "Profil & Dokumen".
                 'kampus' => 'Universitas Indonesia',
-                'jurusan' => 'Teknik Informatika',
-                'pendidikan_terakhir' => 'Sarjana (S1)',
             ]);
 
         $response
@@ -45,30 +43,8 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertSame('Bandung', $user->domisili);
-        $this->assertSame('Universitas Indonesia', $user->kampus);
-        $this->assertSame('Teknik Informatika', $user->jurusan);
-        $this->assertSame('Sarjana (S1)', $user->pendidikan_terakhir);
+        $this->assertNull($user->kampus);
         $this->assertNull($user->email_verified_at);
-    }
-
-    public function test_user_can_add_and_remove_profile_interests()
-    {
-        $user = User::factory()->create();
-        $interest = Interest::query()->where('name', 'Pendidikan')->firstOrFail();
-
-        $this->actingAs($user)
-            ->post(route('profile.interests.store'), [
-                'interest_id' => $interest->id,
-            ])
-            ->assertRedirect(route('profile.edit'));
-
-        $this->assertTrue($user->interests()->whereKey($interest->id)->exists());
-
-        $this->delete(route('profile.interests.destroy', $interest))
-            ->assertRedirect(route('profile.edit'));
-
-        $this->assertFalse($user->interests()->whereKey($interest->id)->exists());
     }
 
     public function test_email_is_stored_in_lowercase_so_the_user_can_still_log_in()
@@ -172,5 +148,24 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_notification_preferences_can_be_updated()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get(route('notifications.edit'))->assertOk();
+
+        $this->actingAs($user)
+            ->patch(route('notifications.update'), [
+                'deadline_reminders' => false,
+                'weekly_digest' => true,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('notifications.edit'));
+
+        $user->refresh();
+        $this->assertFalse($user->notify_deadline_reminders);
+        $this->assertTrue($user->notify_weekly_digest);
     }
 }

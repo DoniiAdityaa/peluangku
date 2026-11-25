@@ -28,6 +28,10 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->profileRules($this->user()->id);
+        // Profile data (campus, major, interests, ...) lives on "Profil & Dokumen".
+        return [
+            'name' => $this->nameRules(),
+            'email' => $this->emailRules($this->user()->id),
+        ];
     }
 }

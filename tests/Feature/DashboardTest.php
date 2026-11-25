@@ -116,15 +116,43 @@ class DashboardTest extends TestCase
         $this->actingAs($user)->get(route('onboarding.index'))->assertOk();
     }
 
-    public function test_onboarded_users_can_update_their_profile_without_the_welcome_screen(): void
+    public function test_profile_page_opens_for_users_who_filled_their_profile(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'manual', 'kampus' => 'UDINUS']);
+
+        $this->actingAs($user)
+            ->get(route('account.profile'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('account/profile')
+                ->where('values.kampus', 'UDINUS'));
+    }
+
+    public function test_profile_page_sends_users_who_skipped_to_onboarding(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'skipped']);
+
+        $this->actingAs($user)
+            ->get(route('account.profile'))
+            ->assertRedirect(route('onboarding.index'));
+    }
+
+    public function test_onboarding_form_sends_finished_users_to_the_profile_page(): void
+    {
+        $user = User::factory()->create(['onboarding_method' => 'manual']);
+
+        $this->actingAs($user)
+            ->get(route('onboarding.profile'))
+            ->assertRedirect(route('account.profile'));
+    }
+
+    public function test_profile_can_be_updated_from_the_profile_page(): void
     {
         $user = User::factory()->create(['onboarding_method' => 'manual', 'cv_path' => 'cv/x.pdf']);
 
-        $this->actingAs($user)->get(route('onboarding.profile'))->assertOk();
-
         $this->actingAs($user)
-            ->post(route('onboarding.store'), [
-                'name' => 'Nama Lengkap',
+            ->post(route('account.profile.update'), [
+                'name' => 'Nama Baru',
                 'tanggal_lahir' => '2004-05-01',
                 'jenis_kelamin' => 'Perempuan',
                 'no_whatsapp' => '081234567890',
@@ -136,8 +164,11 @@ class DashboardTest extends TestCase
                 'jenis_pendanaan' => 'Penuh',
                 'interests' => [Interest::query()->value('id')],
             ])
-            ->assertRedirect(route('dashboard'));
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('account.profile'));
 
-        $this->assertSame('manual', $user->fresh()->onboarding_method);
+        $user->refresh();
+        $this->assertSame('Nama Baru', $user->name);
+        $this->assertSame('manual', $user->onboarding_method);
     }
 }
