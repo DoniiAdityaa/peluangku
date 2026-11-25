@@ -72,7 +72,7 @@ export default function AuthIllustration({ src }: { src: string }) {
     return (
         <div
             aria-hidden="true"
-            className="relative mx-auto my-6 aspect-square w-full max-w-sm"
+            className="relative mx-auto my-6 aspect-square w-full max-w-sm short:my-4 short:aspect-auto short:min-h-32 short:flex-1"
         >
             {!loaded && (
                 <img
