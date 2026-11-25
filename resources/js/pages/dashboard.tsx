@@ -396,7 +396,7 @@ function Recommendations({
                     }
                 />
             ) : (
-                <div className="grid grid-cols-1 gap-4 @2xl:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 @2xl:grid-cols-2 @3xl:grid-cols-3">
                     {shown.map((item, index) => (
                         <ScholarshipCard
                             key={item.id}
