@@ -28,7 +28,11 @@ final class SaveProfile
                 Storage::delete($user->transkrip_path);
             }
 
-            $user->transkrip_path = $transkrip->store("transkrip/{$user->id}");
+            $path = $transkrip->store("transkrip/{$user->id}");
+
+            if ($path !== false) {
+                $user->transkrip_path = $path;
+            }
         }
 
         $user->fill([
@@ -66,7 +70,11 @@ final class SaveProfile
                 continue;
             }
 
-            $file = $item['file'];
+            $file = $item['file'] ?? null;
+
+            if (! $file instanceof UploadedFile) {
+                continue;
+            }
 
             $user->certificates()->create([
                 'name' => $item['name'],

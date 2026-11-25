@@ -16,7 +16,7 @@ class ScholarshipFactory extends Factory
     public function definition(): array
     {
         return [
-            'scholarship_name' => 'Beasiswa '.fake()->unique()->words(2, true),
+            'scholarship_name' => 'Beasiswa '.implode(' ', (array) fake()->unique()->words(2)),
             'provider' => fake()->company(),
             'levels' => ['S1'],
             'major' => null,
