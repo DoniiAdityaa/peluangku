@@ -37,12 +37,12 @@ export default function Login({ status, canResetPassword }: Props) {
                 resetOnSuccess={['password']}
                 // Replace this page in history so Back cannot return to a finished auth step.
                 options={{ replace: true }}
-                className="flex flex-col gap-6"
+                className="flex flex-col gap-6 short:gap-4"
             >
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
+                        <div className="grid gap-6 short:gap-4 shorter:gap-3">
+                            <div className="grid gap-2 shorter:gap-1.5">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
                                     id="email"
@@ -58,7 +58,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <InputError message={errors.email} />
                             </div>
 
-                            <div className="grid gap-2">
+                            <div className="grid gap-2 shorter:gap-1.5">
                                 <Label htmlFor="password">Kata sandi</Label>
                                 <PasswordInput
                                     id="password"

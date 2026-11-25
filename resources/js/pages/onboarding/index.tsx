@@ -83,7 +83,7 @@ function ChoiceCard({
             <p
                 className={cn(
                     'text-xs font-medium',
-                    highlight ? 'text-teal-200' : 'text-muted-foreground',
+                    highlight ? 'text-teal-ink' : 'text-muted-foreground',
                 )}
             >
                 {meta}

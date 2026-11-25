@@ -49,7 +49,7 @@ export default function Field({
                 )}
                 {tag === 'ai' && (
                     <span
-                        className={cn(pillClass, 'bg-navy-700 text-teal-200')}
+                        className={cn(pillClass, 'bg-teal-soft text-teal-ink')}
                     >
                         AI
                     </span>

@@ -66,7 +66,7 @@ export default function FileDrop({
                                 className={cn(
                                     'mt-0.5 text-xs',
                                     highlight && !file
-                                        ? 'text-teal-200'
+                                        ? 'text-teal-ink'
                                         : 'text-muted-foreground',
                                 )}
                             >

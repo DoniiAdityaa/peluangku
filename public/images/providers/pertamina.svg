@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#0E2338"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
+  <!-- Pertamina Modern Dynamic 3-Block Emblem -->
+  <g transform="translate(18, 12)">
+    <!-- Blue Block -->
+    <path d="M14 0H26L18 13H6L14 0Z" fill="#0072CE"/>
+    <!-- Red Block -->
+    <path d="M20 11H32L24 24H12L20 11Z" fill="#ED1B2F"/>
+    <!-- Green Block -->
+    <path d="M8 11H20L12 24H0L8 11Z" fill="#84BD00"/>
+  </g>
+  <text x="32" y="47" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="900" font-size="7.5" fill="#FFFFFF" letter-spacing="1">PERTAMINA</text>
+  <text x="32" y="55" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="600" font-size="5" fill="#0072CE" letter-spacing="0.5">FOUNDATION</text>
+</svg>
+

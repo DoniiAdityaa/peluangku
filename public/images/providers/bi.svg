@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#002D62"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#ECC94B" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Bank Indonesia Crest Motif -->
+  <circle cx="32" cy="27" r="14" stroke="#ECC94B" stroke-width="2" fill="none"/>
+  <circle cx="32" cy="27" r="10" stroke="#ECC94B" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+  <g fill="#FFFFFF">
+    <path d="M23 20H27.5C29.5 20 31 21.2 31 23C31 24.2 30.2 25.1 29 25.6C30.5 26.1 31.5 27.2 31.5 28.8C31.5 31 29.8 32.5 27.2 32.5H23V20ZM25.5 24.5H27C27.9 24.5 28.5 24 28.5 23.2C28.5 22.4 27.9 21.9 27 21.9H25.5V24.5ZM25.5 30.5H27.2C28.3 30.5 29 29.9 29 28.9C29 27.9 28.3 27.3 27.2 27.3H25.5V30.5Z"/>
+    <path d="M34 20H36.5V32.5H34V20Z"/>
+  </g>
+  <text x="32" y="52" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6.5" fill="#ECC94B" letter-spacing="1">BANK INDONESIA</text>
+</svg>
+

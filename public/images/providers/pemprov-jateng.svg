@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#133D63"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#ECC94B" stroke-opacity="0.3" stroke-width="2"/>
+  <!-- Shield & Tugu Muda / Star -->
+  <path d="M32 12L44 17V28C44 36 39 42 32 45C25 42 20 36 20 28V17L32 12Z" fill="#1B4F72" stroke="#ECC94B" stroke-width="1.5"/>
+  <polygon points="32,18 34,23 39,23 35,26 36,31 32,28 28,31 29,26 25,23 30,23" fill="#ECC94B"/>
+  <text x="32" y="53" text-anchor="middle" font-family="'Montserrat', sans-serif" font-weight="800" font-size="6" fill="#FFFFFF" letter-spacing="0.5">JAWA TENGAH</text>
+</svg>
+
