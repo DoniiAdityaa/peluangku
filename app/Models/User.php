@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -56,6 +57,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function interests(): BelongsToMany
     {
         return $this->belongsToMany(Interest::class)->withTimestamps();
+    }
+
+    /**
+     * Get the certificates attached to the user's profile.
+     *
+     * @return HasMany<Certificate, $this>
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 
     /**

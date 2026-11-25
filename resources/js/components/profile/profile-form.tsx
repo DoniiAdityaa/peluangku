@@ -11,11 +11,14 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
+import CertificateList from '@/components/form/certificate-list';
+import type { CertificateItem } from '@/components/form/certificate-list';
 import ChoiceChips from '@/components/form/choice-chips';
 import Field from '@/components/form/field';
 import type { FieldTag } from '@/components/form/field';
 import FileDrop from '@/components/form/file-drop';
-import NativeSelect from '@/components/form/native-select';
+import Combobox from '@/components/form/combobox';
+import type { ComboboxOption } from '@/components/form/combobox';
 import TagInput from '@/components/form/tag-input';
 import EditLayout from '@/components/profile/edit-layout';
 import type { Tone } from '@/components/kit/icon-badge';
@@ -59,6 +62,14 @@ export type ProfileFormProps = {
     flaggedFields?: string[];
     cvName: string | null;
     hasTranskrip?: boolean;
+    certificates?: {
+        id: number;
+        name: string;
+        size: number;
+        mime: string;
+        url: string;
+    }[];
+    maxCertificates?: number;
     options: Record<
         | 'jenisKelamin'
         | 'jenjangSaatIni'
@@ -69,6 +80,8 @@ export type ProfileFormProps = {
         string[]
     >;
     interests: { id: number; name: string }[];
+    cities: ComboboxOption[];
+    campuses: ComboboxOption[];
 };
 
 type FormData = {
@@ -77,7 +90,11 @@ type FormData = {
         : Values[K] extends number[]
           ? number[]
           : string;
-} & { cv: File | null; transkrip: File | null };
+} & {
+    cv: File | null;
+    transkrip: File | null;
+    certificates: CertificateItem[];
+};
 
 type SectionId = 'dokumen' | 'diri' | 'pendidikan' | 'prestasi' | 'beasiswa';
 
@@ -89,6 +106,8 @@ type Section = {
     tone: Tone;
     /** Field names counted in the header and used to find errors. */
     fields: string[];
+    /** Optional extras that are not counted but can still have errors. */
+    extraFields?: string[];
 };
 
 const SECTIONS: Section[] = [
@@ -129,6 +148,7 @@ const SECTIONS: Section[] = [
         icon: Trophy,
         tone: 'green',
         fields: ['prestasi', 'organisasi', 'sertifikat_bahasa', 'skor_bahasa'],
+        extraFields: ['certificates'],
     },
     {
         id: 'beasiswa',
@@ -162,8 +182,12 @@ export default function ProfileForm({
     flaggedFields = [],
     cvName,
     hasTranskrip = false,
+    certificates = [],
+    maxCertificates = 3,
     options,
     interests,
+    cities,
+    campuses,
 }: ProfileFormProps) {
     const editing = mode === 'edit';
     const fromAi = !editing && method === 'ai';
@@ -188,9 +212,21 @@ export default function ProfileForm({
         interests: values.interests ?? [],
         cv: null,
         transkrip: null,
+        certificates: certificates.map((certificate) => ({
+            ...certificate,
+            key: `saved-${certificate.id}`,
+        })),
     });
     const { data, setData, errors, processing } = form;
     const errorKeys = Object.keys(errors);
+    const errorMap = errors as Record<string, string | undefined>;
+    const compressing = data.certificates.some((item) => item.compressing);
+    const hasErrorIn = (fields: string[]) =>
+        fields.some((field) =>
+            errorKeys.some(
+                (key) => key === field || key.startsWith(`${field}.`),
+            ),
+        );
 
     const isFilled = (field: string): boolean => {
         if (field === 'cv') return Boolean(data.cv || cvName);
@@ -211,11 +247,10 @@ export default function ProfileForm({
         ...section,
         filled: section.fields.filter(isFilled).length,
         total: section.fields.length,
-        hasError: section.fields.some((field) =>
-            errorKeys.some(
-                (key) => key === field || key.startsWith(`${field}.`),
-            ),
-        ),
+        hasError: hasErrorIn([
+            ...section.fields,
+            ...(section.extraFields ?? []),
+        ]),
         hasAi:
             fromAi &&
             section.fields.some(
@@ -262,6 +297,16 @@ export default function ProfileForm({
 
     const submit = (event: FormEvent) => {
         event.preventDefault();
+
+        if (compressing) return;
+
+        // Send only what the server needs: kept rows by id, new rows with their file.
+        form.transform((current) => ({
+            ...current,
+            certificates: current.certificates.map(({ id, name, file }) =>
+                id ? { id, name } : { name, file },
+            ),
+        }));
         form.post(editing ? update().url : store().url, {
             forceFormData: true,
             replace: !editing,
@@ -269,11 +314,13 @@ export default function ProfileForm({
             onError: (formErrors) => {
                 const keys = Object.keys(formErrors);
                 const first = SECTIONS.find((section) =>
-                    section.fields.some((field) =>
-                        keys.some(
-                            (key) =>
-                                key === field || key.startsWith(`${field}.`),
-                        ),
+                    [...section.fields, ...(section.extraFields ?? [])].some(
+                        (field) =>
+                            keys.some(
+                                (key) =>
+                                    key === field ||
+                                    key.startsWith(`${field}.`),
+                            ),
                     ),
                 );
 
@@ -388,15 +435,19 @@ export default function ProfileForm({
                 )}
                 <Button
                     type="submit"
-                    disabled={processing || (editing && !form.isDirty)}
+                    disabled={
+                        processing || compressing || (editing && !form.isDirty)
+                    }
                     className={cn(primaryButtonClass, 'flex-1')}
                 >
                     {processing && <Spinner />}
                     {processing
                         ? 'Menyimpan...'
-                        : editing
-                          ? 'Simpan perubahan'
-                          : 'Simpan profil'}
+                        : compressing
+                          ? 'Memproses file...'
+                          : editing
+                            ? 'Simpan perubahan'
+                            : 'Simpan profil'}
                 </Button>
             </div>
         </div>
@@ -489,7 +540,7 @@ export default function ProfileForm({
                         <FileDrop
                             id="cv"
                             label="CV"
-                            hint="wajib"
+                            hint="opsional"
                             accept=".pdf,.docx"
                             buttonLabel="Unggah CV (PDF/DOCX)"
                             existingName={cvName}
@@ -557,7 +608,7 @@ export default function ProfileForm({
                                 autoComplete="bday"
                                 className={cn(
                                     fieldClass,
-                                    '[color-scheme:dark]',
+                                    '[color-scheme:light] dark:[color-scheme:dark]',
                                 )}
                                 aria-invalid={Boolean(errors.tanggal_lahir)}
                             />
@@ -607,16 +658,17 @@ export default function ProfileForm({
                             tag={tag('domisili')}
                             error={errors.domisili}
                         >
-                            <Input
+                            <Combobox
                                 id="domisili"
                                 value={data.domisili}
-                                onChange={(e) =>
-                                    setData('domisili', e.target.value)
-                                }
-                                placeholder="Kota, provinsi"
-                                autoComplete="address-level2"
-                                className={fieldClass}
-                                aria-invalid={Boolean(errors.domisili)}
+                                onChange={(value) => setData('domisili', value)}
+                                options={cities}
+                                placeholder="Pilih kota"
+                                searchPlaceholder="Cari kota atau provinsi"
+                                allowOther
+                                otherHint="Kotamu tidak ada? Ketik sendiri"
+                                otherPlaceholder="Kota, provinsi. Contoh: Klaten, Jawa Tengah"
+                                invalid={Boolean(errors.domisili)}
                             />
                         </Field>
                     </div>
@@ -647,21 +699,23 @@ export default function ProfileForm({
                         </Field>
                         <Field
                             id="kampus"
-                            label="Universitas / sekolah"
+                            label="Universitas"
                             tag={tag('kampus')}
                             error={errors.kampus}
                             className="sm:col-span-2"
                         >
-                            <Input
+                            <Combobox
                                 id="kampus"
                                 value={data.kampus}
-                                onChange={(e) =>
-                                    setData('kampus', e.target.value)
-                                }
-                                placeholder="Nama kampus atau sekolah"
-                                autoComplete="organization"
-                                className={fieldClass}
-                                aria-invalid={Boolean(errors.kampus)}
+                                onChange={(value) => setData('kampus', value)}
+                                options={campuses}
+                                placeholder="Pilih universitas"
+                                searchPlaceholder="Cari nama atau singkatan, misal UDINUS"
+                                allowOther
+                                otherHint="Kampusmu tidak ada? Ketik sendiri"
+                                otherPlaceholder="Nama lengkap universitas"
+                                hintInTrigger={false}
+                                invalid={Boolean(errors.kampus)}
                             />
                         </Field>
                         <Field
@@ -691,22 +745,23 @@ export default function ProfileForm({
                         >
                             <Input
                                 id="semester"
-                                type="number"
                                 inputMode="numeric"
-                                min={1}
-                                max={14}
                                 value={data.semester}
-                                onChange={(e) =>
-                                    setData('semester', e.target.value)
-                                }
-                                placeholder="Contoh: 5"
+                                onChange={(e) => {
+                                    const next = onlySemester(e.target.value);
+
+                                    if (next !== null) {
+                                        setData('semester', next);
+                                    }
+                                }}
+                                placeholder="1 – 14"
                                 className={fieldClass}
                                 aria-invalid={Boolean(errors.semester)}
                             />
                         </Field>
                         <Field
                             id="ipk"
-                            label="IPK / nilai rata-rata"
+                            label="IPK"
                             hint="opsional"
                             tag={tag('ipk')}
                             note={
@@ -720,7 +775,16 @@ export default function ProfileForm({
                                 id="ipk"
                                 inputMode="decimal"
                                 value={data.ipk}
-                                onChange={(e) => setData('ipk', e.target.value)}
+                                onChange={(e) => {
+                                    const next = onlyIpk(e.target.value);
+
+                                    if (next !== null) {
+                                        setData('ipk', next);
+                                    }
+                                }}
+                                onBlur={() =>
+                                    setData('ipk', formatIpk(data.ipk))
+                                }
                                 placeholder="0.00 – 4.00"
                                 className={cn(
                                     fieldClass,
@@ -772,7 +836,7 @@ export default function ProfileForm({
                                 hint="opsional"
                                 error={errors.sertifikat_bahasa}
                             >
-                                <NativeSelect
+                                <Combobox
                                     id="sertifikat_bahasa"
                                     value={data.sertifikat_bahasa}
                                     onChange={(value) =>
@@ -780,6 +844,9 @@ export default function ProfileForm({
                                     }
                                     placeholder="Pilih sertifikat"
                                     options={options.sertifikatBahasa}
+                                    allowOther
+                                    otherPlaceholder="Nama sertifikat. Contoh: TOEIC"
+                                    invalid={Boolean(errors.sertifikat_bahasa)}
                                 />
                             </Field>
                             <Field
@@ -813,6 +880,26 @@ export default function ProfileForm({
                                 />
                             </Field>
                         </div>
+                        <Field
+                            id="certificates"
+                            label="Sertifikat"
+                            hint={`opsional · maks. ${maxCertificates}`}
+                        >
+                            <CertificateList
+                                id="certificates"
+                                items={data.certificates}
+                                onChange={(update) =>
+                                    setData((current) => ({
+                                        ...current,
+                                        certificates: update(
+                                            current.certificates,
+                                        ),
+                                    }))
+                                }
+                                max={maxCertificates}
+                                errors={errorMap}
+                            />
+                        </Field>
                     </div>
                 );
             case 'beasiswa':
@@ -892,7 +979,7 @@ export default function ProfileForm({
                             noteTone="muted"
                             error={errors.penghasilan_ortu}
                         >
-                            <NativeSelect
+                            <Combobox
                                 id="penghasilan_ortu"
                                 value={data.penghasilan_ortu}
                                 onChange={(value) =>
@@ -900,6 +987,7 @@ export default function ProfileForm({
                                 }
                                 placeholder="Pilih rentang"
                                 options={options.penghasilanOrtu}
+                                invalid={Boolean(errors.penghasilan_ortu)}
                             />
                         </Field>
                     </div>
@@ -912,4 +1000,33 @@ function toggle<T>(list: T[], value: T): T[] {
     return list.includes(value)
         ? list.filter((item) => item !== value)
         : [...list, value];
+}
+
+/** Semester as typed: whole numbers 1–14 only. `null` rejects the keystroke. */
+function onlySemester(raw: string): string | null {
+    const digits = raw.replace(/\D/g, '');
+
+    if (digits === '') return '';
+
+    const number = Number(digits);
+
+    return number >= 1 && number <= 14 ? String(number) : null;
+}
+
+/** IPK as typed: 0.00–4.00, two decimals, a comma counts as the dot. */
+function onlyIpk(raw: string): string | null {
+    let text = raw.replace(',', '.').replace(/\s/g, '');
+
+    if (text.startsWith('.')) text = `0${text}`;
+    if (text === '') return '';
+    if (!/^\d(\.\d{0,2})?$/.test(text)) return null;
+
+    return Number(text) <= 4 ? text : null;
+}
+
+/** "3.5" → "3.50" once the field loses focus. */
+function formatIpk(value: string): string {
+    if (value === '' || Number.isNaN(Number(value))) return value;
+
+    return Number(value).toFixed(2);
 }

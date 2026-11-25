@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Certificate;
 use App\Models\Interest;
 use App\Models\User;
 
@@ -41,7 +42,18 @@ final class ProfileFormData
             'values' => array_merge($values, $overrides),
             'cvName' => $user->cv_path ? ($user->cv_name ?? 'CV') : null,
             'hasTranskrip' => $user->transkrip_path !== null,
+            'certificates' => $user->certificates()->oldest('id')->get()
+                ->map(fn (Certificate $certificate) => [
+                    'id' => $certificate->id,
+                    'name' => $certificate->name,
+                    'size' => $certificate->size,
+                    'mime' => $certificate->mime,
+                    'url' => route('certificates.show', $certificate),
+                ]),
+            'maxCertificates' => Certificate::MAX_PER_USER,
             'options' => OnboardingOptions::all(),
+            'cities' => Cities::options(),
+            'campuses' => Campuses::options(),
             'interests' => Interest::query()->orderBy('name')->get(['id', 'name']),
         ];
     }

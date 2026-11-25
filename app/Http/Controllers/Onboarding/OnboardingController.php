@@ -6,6 +6,8 @@ use App\Actions\SaveProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Onboarding\StoreOnboardingProfileRequest;
 use App\Services\Cv\CvParser;
+use App\Support\Campuses;
+use App\Support\Cities;
 use App\Support\ProfileFormData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,6 +58,11 @@ class OnboardingController extends Controller
         $save->replaceCv($user, $file);
 
         $result = $parser->parse($user->cv_path, $user);
+
+        // Match what the CV says to the dropdown lists ("UDINUS" → "Universitas
+        // Dian Nuswantoro"). Anything not listed stays as typed and shows as "Lainnya".
+        $result['fields']['domisili'] = Cities::normalize($result['fields']['domisili'] ?? null);
+        $result['fields']['kampus'] = Campuses::normalize($result['fields']['kampus'] ?? null);
 
         $request->session()->put(self::DRAFT, $result['fields']);
         $request->session()->put(self::FLAGGED, $result['flagged']);
