@@ -26,7 +26,8 @@ import type { Tone } from '@/components/kit/icon-badge';
 import ScoreRing from '@/components/kit/score-ring';
 import { cardClass, primaryButtonClass } from '@/lib/ui';
 import { cn } from '@/lib/utils';
-import { index as onboardingIndex, profile } from '@/routes/onboarding';
+import { profile } from '@/routes/account';
+import { index as onboardingIndex } from '@/routes/onboarding';
 
 type Saved = {
     id: number;

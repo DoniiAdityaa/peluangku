@@ -34,7 +34,8 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import { index as onboardingIndex, profile } from '@/routes/onboarding';
+import { profile as accountProfile } from '@/routes/account';
+import { index as onboardingIndex } from '@/routes/onboarding';
 import { edit as settings } from '@/routes/profile';
 
 type Item = {
@@ -51,10 +52,15 @@ const menu: Item[] = [
     { title: 'Lamaran Saya', icon: ClipboardCheck },
 ];
 
-const account: Item[] = [
-    { title: 'Profil & Dokumen', icon: UserRound, href: profile() },
-    { title: 'Pengaturan', icon: Settings, href: settings() },
-];
+/**
+ * Where "Profil & Dokumen" leads: onboarding for people who skipped it and
+ * never filled anything in, otherwise the profile editing page.
+ */
+function useProfileHref() {
+    const { profileCompletion } = usePage().props;
+
+    return profileCompletion?.skipped ? onboardingIndex() : accountProfile();
+}
 
 /**
  * Floating, rounded sidebar: grouped menu, icons in small tiles, a glowing
@@ -65,6 +71,10 @@ const account: Item[] = [
 export function AppSidebar() {
     const { state, isMobile, toggleSidebar } = useSidebar();
     const isCollapsed = state === 'collapsed' && !isMobile;
+    const account: Item[] = [
+        { title: 'Profil & Dokumen', icon: UserRound, href: useProfileHref() },
+        { title: 'Pengaturan', icon: Settings, href: settings() },
+    ];
 
     return (
         <Sidebar
@@ -219,7 +229,7 @@ function ProfileProgress() {
 
     return (
         <Link
-            href={skipped ? onboardingIndex() : profile()}
+            href={skipped ? onboardingIndex() : accountProfile()}
             aria-label={`Profil ${percent}% lengkap. Lengkapi sekarang`}
             className="group/profile flex items-center gap-3 rounded-card border border-border/60 bg-gradient-to-br from-teal-400/10 to-transparent p-3 transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-none group-data-[collapsible=icon]:p-0 hover:border-teal-ink/40"
         >

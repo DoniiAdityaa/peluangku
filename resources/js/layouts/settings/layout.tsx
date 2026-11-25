@@ -1,77 +1,118 @@
 import { Link } from '@inertiajs/react';
+import { Bell, Palette, ShieldCheck, UserRound } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
-import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { cn, toUrl } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
-import { edit } from '@/routes/profile';
+import { edit as editNotifications } from '@/routes/notifications';
+import { edit as editAccount } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
-import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+const items: {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    href: ReturnType<typeof editAccount>;
+}[] = [
     {
-        title: 'Profile',
-        href: edit(),
-        icon: null,
+        title: 'Akun',
+        description: 'Nama, email, hapus akun',
+        icon: UserRound,
+        href: editAccount(),
     },
     {
-        title: 'Security',
+        title: 'Keamanan',
+        description: 'Kata sandi, 2FA, passkey',
+        icon: ShieldCheck,
         href: editSecurity(),
-        icon: null,
     },
     {
-        title: 'Appearance',
+        title: 'Tampilan',
+        description: 'Tema terang atau gelap',
+        icon: Palette,
         href: editAppearance(),
-        icon: null,
+    },
+    {
+        title: 'Notifikasi',
+        description: 'Pengingat dan info email',
+        icon: Bell,
+        href: editNotifications(),
     },
 ];
 
+/**
+ * Settings frame: a menu of sections on the left (tabs on mobile) and the
+ * section's cards on the right.
+ */
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     return (
-        <div className="px-4 py-6">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
+        <div className="mx-auto w-full max-w-[1100px] px-4 py-6 sm:px-6 md:px-10 md:py-9">
+            <header className="mb-7">
+                <h1 className="text-2xl font-extrabold tracking-tight sm:text-[28px]">
+                    Pengaturan
+                </h1>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                    Atur akun, keamanan, tampilan, dan notifikasi.
+                </p>
+            </header>
 
-            <div className="flex flex-col lg:flex-row lg:space-x-12">
-                <aside className="w-full max-w-xl lg:w-48">
-                    <nav
-                        className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Settings"
-                    >
-                        {sidebarNavItems.map((item, index) => (
-                            <Button
-                                key={`${toUrl(item.href)}-${index}`}
-                                size="sm"
-                                variant="ghost"
-                                asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentOrParentUrl(item.href),
-                                })}
+            <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+                <nav
+                    aria-label="Bagian pengaturan"
+                    className={cn(
+                        'flex gap-1 overflow-x-auto lg:sticky lg:top-6 lg:flex-col lg:p-2',
+                        'lg:rounded-card lg:border lg:border-border/60 lg:bg-card lg:shadow-card',
+                    )}
+                >
+                    {items.map((item) => {
+                        const active = isCurrentOrParentUrl(item.href);
+
+                        return (
+                            <Link
+                                key={item.title}
+                                href={item.href}
+                                prefetch
+                                aria-current={active ? 'page' : undefined}
+                                className={cn(
+                                    'flex shrink-0 items-center gap-3 rounded-control px-3 py-2.5 transition-colors',
+                                    active
+                                        ? 'bg-primary/10 text-foreground'
+                                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                                    'max-lg:border max-lg:border-border/60 max-lg:bg-card',
+                                    active && 'max-lg:border-primary/50',
+                                )}
                             >
-                                <Link href={item.href}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
+                                <span
+                                    aria-hidden="true"
+                                    className={cn(
+                                        'flex size-8 shrink-0 items-center justify-center rounded-[10px]',
+                                        active
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-muted text-foreground/70',
                                     )}
-                                    {item.title}
-                                </Link>
-                            </Button>
-                        ))}
-                    </nav>
-                </aside>
+                                >
+                                    <item.icon
+                                        className="size-[17px]"
+                                        strokeWidth={2}
+                                    />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="block text-sm font-semibold">
+                                        {item.title}
+                                    </span>
+                                    <span className="hidden truncate text-xs text-muted-foreground lg:block">
+                                        {item.description}
+                                    </span>
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </nav>
 
-                <Separator className="my-6 lg:hidden" />
-
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">
-                        {children}
-                    </section>
-                </div>
+                <div className="flex min-w-0 flex-col gap-5">{children}</div>
             </div>
         </div>
     );
