@@ -1,11 +1,5 @@
 import { router } from '@inertiajs/react';
-import {
-    ArrowUpRight,
-    Bookmark,
-    Check,
-    CheckCircle2,
-    Hourglass,
-} from 'lucide-react';
+import { ArrowUpRight, Bookmark, CheckCircle2, Hourglass } from 'lucide-react';
 import { useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { cardClass } from '@/lib/ui';
@@ -270,14 +264,6 @@ const PILL: Record<Tone, string> = {
     blue: 'bg-primary/15 text-primary',
 };
 
-const TEXT: Record<Tone, string> = {
-    red: 'text-danger-ink',
-    amber: 'text-warning',
-    green: 'text-success',
-    teal: 'text-teal-ink',
-    blue: 'text-primary',
-};
-
 const BAR: Record<Tone, string> = {
     red: 'bg-danger-ink',
     amber: 'bg-warning',
@@ -340,7 +326,6 @@ export default function ScholarshipCard({
 }) {
     const status = statusOf(scholarship.daysLeft);
     const tier = matchTier(scholarship.score);
-    const deadline = new Date(`${scholarship.deadline}T00:00:00`);
     const daysLeft =
         scholarship.daysLeft <= 0
             ? 'Hari ini'
@@ -423,20 +408,27 @@ export default function ScholarshipCard({
                             Dana {scholarship.funding.toLowerCase()}
                         </li>
                     )}
-                    
                 </ul>
             </div>
-                <div className="flex flex-col gap-2 border-t border-border/60 pt-3">
-                    <div>
-                        <div className="flex items-center justify-between gap-3">
-                            <Pill tone={tier.tone}>{scholarship.score}% {tier.label}</Pill>
-                            <Pill tone={status.tone === 'green' ? 'blue' : status.tone}>
-                            <Hourglass className="size-3.5" aria-hidden="true" />
-                                {daysLeft}
-                            </Pill>
-                        </div>
+            <div className="flex flex-col gap-2 border-t border-border/60 pt-3">
+                <div>
+                    <div className="flex items-center justify-between gap-3">
+                        <Pill tone={tier.tone}>
+                            {scholarship.score}% {tier.label}
+                        </Pill>
+                        <Pill
+                            tone={
+                                status.tone === 'green' ? 'blue' : status.tone
+                            }
+                        >
+                            <Hourglass
+                                className="size-3.5"
+                                aria-hidden="true"
+                            />
+                            {daysLeft}
+                        </Pill>
                     </div>
-
+                </div>
             </div>
 
             <a
