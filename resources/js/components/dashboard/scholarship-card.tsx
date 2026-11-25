@@ -134,9 +134,9 @@ export function ProviderLogo({
     const toneClass = AVATAR_TONES[hash % AVATAR_TONES.length];
 
     const sizeClasses = {
-        sm: 'size-9 text-xs rounded-xl p-1',
-        md: 'size-12 text-sm rounded-2xl p-1.5',
-        lg: 'size-14 text-base rounded-2xl p-2',
+        sm: 'size-9 text-xs rounded-lg p-1',
+        md: 'size-12 text-sm rounded-lg',
+        lg: 'size-14 text-base rounded-lg p-2',
     }[size];
 
     if (logoSrc && !failed) {
@@ -316,7 +316,7 @@ function Pill({ tone, children }: { tone: Tone; children: ReactNode }) {
     return (
         <span
             className={cn(
-                'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+                'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold',
                 PILL[tone],
             )}
         >
@@ -353,7 +353,7 @@ export default function ScholarshipCard({
             style={style}
             className={cn(
                 cardClass,
-                'group/card flex flex-col gap-5 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 sm:p-6',
+                'group/card flex flex-col gap-3.5 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 sm:p-5',
                 className,
             )}
         >
@@ -374,7 +374,7 @@ export default function ScholarshipCard({
             </div>
 
             {/* Provider Brand & Scholarship Title */}
-            <div className="flex items-start gap-3.5">
+            <div className="flex items-start gap-3">
                 <ProviderLogo
                     provider={scholarship.provider}
                     image={scholarship.image}
@@ -382,7 +382,10 @@ export default function ScholarshipCard({
                     className="mt-0.5"
                 />
                 <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                    <h3 className="mt-0.5 line-clamp-2 text-base leading-snug font-bold tracking-tight text-foreground transition-colors group-hover/card:text-primary">
+                        {scholarship.name}
+                    </h3>
+                    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
                         <span className="truncate">
                             {scholarship.provider ?? 'Penyelenggara'}
                         </span>
@@ -391,112 +394,56 @@ export default function ScholarshipCard({
                             aria-label="Penyelenggara Terverifikasi"
                         />
                     </div>
-                    <h3 className="mt-1 text-lg leading-snug font-bold tracking-tight text-foreground transition-colors group-hover/card:text-primary">
-                        {scholarship.name}
-                    </h3>
                 </div>
             </div>
 
             {scholarship.description && (
-                <p className="-mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                     {scholarship.description}
                 </p>
             )}
 
-            <ul className="-mt-1 flex flex-wrap gap-1.5" aria-label="Info">
-                {scholarship.levels.map((level) => (
-                    <li
-                        key={level}
-                        className="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary"
-                    >
-                        {level}
-                    </li>
-                ))}
-                {scholarship.location && (
-                    <li className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                        {scholarship.location}
-                    </li>
-                )}
-                {scholarship.funding && (
-                    <li className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                        Dana {scholarship.funding.toLowerCase()}
-                    </li>
-                )}
-            </ul>
-
-            <div className="flex flex-col gap-4 border-t border-border/60 pt-5">
-                <div>
-                    <div className="flex items-end justify-between gap-3">
-                        <div>
-                            <p className="text-xs text-muted-foreground">
-                                Kecocokan denganmu
-                            </p>
-                            <p
-                                className={cn(
-                                    'mt-0.5 text-2xl font-extrabold tabular-nums',
-                                    TEXT[tier.tone],
-                                )}
-                            >
-                                {scholarship.score}%
-                            </p>
-                        </div>
-                        <Pill tone={tier.tone}>{tier.label}</Pill>
-                    </div>
-                    <div
-                        role="progressbar"
-                        aria-valuenow={scholarship.score}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label="Kecocokan"
-                        className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted"
-                    >
-                        <div
-                            className={cn(
-                                'h-full rounded-full',
-                                BAR[tier.tone],
-                            )}
-                            style={{ width: `${scholarship.score}%` }}
-                        />
-                    </div>
-                    {scholarship.reasons.length > 0 && (
-                        <p className="mt-2.5 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
-                            <Check
-                                className="mt-px size-3.5 shrink-0 text-success"
-                                strokeWidth={2.5}
-                                aria-hidden="true"
-                            />
-                            {scholarship.reasons.slice(0, 3).join(' · ')}
-                        </p>
+            <div className="flex items-end justify-between gap-3">
+                <ul className="flex flex-wrap gap-1.5" aria-label="Info">
+                    {scholarship.levels.map((level) => (
+                        <li
+                            key={level}
+                            className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary"
+                        >
+                            {level}
+                        </li>
+                    ))}
+                    {scholarship.location && (
+                        <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                            {scholarship.location}
+                        </li>
                     )}
-                </div>
-
-                <div className="flex items-end justify-between gap-3">
+                    {scholarship.funding && (
+                        <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                            Dana {scholarship.funding.toLowerCase()}
+                        </li>
+                    )}
+                    
+                </ul>
+            </div>
+                <div className="flex flex-col gap-2 border-t border-border/60 pt-3">
                     <div>
-                        <p className="text-xs text-muted-foreground">
-                            Batas pendaftaran
-                        </p>
-                        <p className="mt-0.5 font-bold">
-                            <time dateTime={scholarship.deadline}>
-                                {deadline.toLocaleDateString('id-ID', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric',
-                                })}
-                            </time>
-                        </p>
+                        <div className="flex items-center justify-between gap-3">
+                            <Pill tone={tier.tone}>{scholarship.score}% {tier.label}</Pill>
+                            <Pill tone={status.tone === 'green' ? 'blue' : status.tone}>
+                            <Hourglass className="size-3.5" aria-hidden="true" />
+                                {daysLeft}
+                            </Pill>
+                        </div>
                     </div>
-                    <Pill tone={status.tone === 'green' ? 'blue' : status.tone}>
-                        <Hourglass className="size-3.5" aria-hidden="true" />
-                        {daysLeft}
-                    </Pill>
-                </div>
+
             </div>
 
             <a
                 href={scholarship.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-control bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:outline-none"
+                className="mt-auto inline-flex h-10 items-center justify-center gap-2 rounded-control bg-primary text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:outline-none"
             >
                 Kunjungi situs resmi
                 <ArrowUpRight
