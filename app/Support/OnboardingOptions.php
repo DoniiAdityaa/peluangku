@@ -15,8 +15,6 @@ final class OnboardingOptions
 
     public const JENJANG_TUJUAN = ['S1', 'S2', 'S3', 'Non-gelar'];
 
-    public const LOKASI_TUJUAN = ['Dalam negeri', 'Luar negeri'];
-
     public const JENIS_PENDANAAN = ['Penuh', 'Sebagian', 'Semua'];
 
     public const SERTIFIKAT_BAHASA = ['Belum punya', 'TOEFL ITP', 'TOEFL iBT', 'IELTS', 'Lainnya'];
@@ -32,7 +30,6 @@ final class OnboardingOptions
             'jenisKelamin' => self::JENIS_KELAMIN,
             'jenjangSaatIni' => self::JENJANG_SAAT_INI,
             'jenjangTujuan' => self::JENJANG_TUJUAN,
-            'lokasiTujuan' => self::LOKASI_TUJUAN,
             'jenisPendanaan' => self::JENIS_PENDANAAN,
             'sertifikatBahasa' => self::SERTIFIKAT_BAHASA,
             'penghasilanOrtu' => self::PENGHASILAN_ORTU,

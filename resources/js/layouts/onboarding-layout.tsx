@@ -1,4 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
+import BrandLogo from '@/components/brand-logo';
 import { Check } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
@@ -40,13 +41,7 @@ export default function OnboardingLayout({
     return (
         <div className="min-h-svh bg-background text-foreground">
             <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-7 sm:px-12">
-                <img
-                    src="/images/brand/svg/peluangku-logo-putih.svg"
-                    alt="Peluangku"
-                    width="4998"
-                    height="1116"
-                    className="h-auto w-32"
-                />
+                <BrandLogo className="w-32" />
                 <div className="flex items-center gap-4">
                     {!finished && (
                         <>

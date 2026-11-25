@@ -28,3 +28,11 @@ export const statusClass =
 /** Small "AI" / "Cek lagi" style pills next to labels. */
 export const pillClass =
     'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold';
+
+/** Raised card inside the app frame (dashboard panels). */
+export const panelClass =
+    'rounded-[22px] border border-white/[0.06] bg-surface shadow-[0_1px_0_0_rgb(255_255_255/0.03)_inset]';
+
+/** Square icon tile at the start of a panel header or KPI. */
+export const iconTileClass =
+    'flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.06] text-foreground';

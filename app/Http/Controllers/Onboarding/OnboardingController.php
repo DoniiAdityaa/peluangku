@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Onboarding;
 
+use App\Actions\SaveProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Onboarding\StoreOnboardingProfileRequest;
-use App\Models\Interest;
-use App\Models\User;
 use App\Services\Cv\CvParser;
-use App\Support\OnboardingOptions;
+use App\Support\ProfileFormData;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -46,7 +43,7 @@ class OnboardingController extends Controller
     /**
      * Store the CV, let the parser read it and keep the result as a draft.
      */
-    public function parseCv(Request $request, CvParser $parser): RedirectResponse
+    public function parseCv(Request $request, CvParser $parser, SaveProfile $save): RedirectResponse
     {
         $request->validate(
             ['cv' => ['required', 'file', 'mimes:pdf,docx', 'max:5120']],
@@ -56,7 +53,7 @@ class OnboardingController extends Controller
 
         $user = $request->user();
         $file = $request->file('cv');
-        $this->replaceCv($user, $file);
+        $save->replaceCv($user, $file);
 
         $result = $parser->parse($user->cv_path, $user);
 
@@ -79,74 +76,29 @@ class OnboardingController extends Controller
         $draft = $request->session()->get(self::DRAFT);
         $fromAi = $request->query('sumber') === 'ai' && is_array($draft);
 
-        $values = [
-            'name' => $user->name,
-            'tanggal_lahir' => $user->tanggal_lahir?->format('Y-m-d'),
-            'jenis_kelamin' => $user->jenis_kelamin,
-            'no_whatsapp' => $user->no_whatsapp,
-            'domisili' => $user->domisili,
-            'pendidikan_terakhir' => $user->pendidikan_terakhir,
-            'kampus' => $user->kampus,
-            'jurusan' => $user->jurusan,
-            'semester' => $user->semester,
-            'ipk' => $user->ipk,
-            'prestasi' => $user->prestasi ?? [],
-            'organisasi' => $user->organisasi ?? [],
-            'sertifikat_bahasa' => $user->sertifikat_bahasa,
-            'skor_bahasa' => $user->skor_bahasa,
-            'jenjang_tujuan' => $user->jenjang_tujuan ?? [],
-            'lokasi_tujuan' => $user->lokasi_tujuan ?? [],
-            'jenis_pendanaan' => $user->jenis_pendanaan,
-            'penghasilan_ortu' => $user->penghasilan_ortu,
-            'interests' => $user->interests()->pluck('interests.id'),
-        ];
-
-        if ($fromAi) {
-            $values = array_merge($values, $draft);
-        }
-
         return Inertia::render('onboarding/profile', [
+            ...ProfileFormData::for($user, $fromAi ? $draft : []),
             'method' => $fromAi ? 'ai' : 'manual',
-            'values' => $values,
             'aiFields' => $fromAi ? array_keys(array_filter($draft, fn ($value) => filled($value))) : [],
             'flaggedFields' => $fromAi ? $request->session()->get(self::FLAGGED, []) : [],
-            'cvName' => $user->cv_path ? ($user->cv_name ?? 'CV') : null,
-            'options' => OnboardingOptions::all(),
-            'interests' => Interest::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     /**
      * Save the profile and finish onboarding.
      */
-    public function store(StoreOnboardingProfileRequest $request): RedirectResponse
+    public function store(StoreOnboardingProfileRequest $request, SaveProfile $save): RedirectResponse
     {
-        $user = $request->user();
-        $data = $request->validated();
-
-        if ($request->hasFile('cv')) {
-            $this->replaceCv($user, $request->file('cv'));
-        }
-
-        if ($request->hasFile('transkrip')) {
-            if ($user->transkrip_path) {
-                Storage::delete($user->transkrip_path);
-            }
-
-            $user->transkrip_path = $request->file('transkrip')->store("transkrip/{$user->id}");
-        }
-
-        $fromAi = $request->session()->has(self::DRAFT);
-
-        $user->fill([
-            ...collect($data)->except(['cv', 'transkrip', 'interests'])->all(),
-            'prestasi' => array_values($data['prestasi'] ?? []),
-            'organisasi' => array_values($data['organisasi'] ?? []),
-            'onboarding_method' => $fromAi ? 'ai' : 'manual',
-            'onboarded_at' => now(),
-        ])->save();
-
-        $user->interests()->sync($data['interests']);
+        $save->handle(
+            $request->user(),
+            $request->validated(),
+            $request->file('cv'),
+            $request->file('transkrip'),
+            [
+                'onboarding_method' => $request->session()->has(self::DRAFT) ? 'ai' : 'manual',
+                'onboarded_at' => now(),
+            ],
+        );
 
         $request->session()->forget([self::DRAFT, self::FLAGGED]);
 
@@ -191,20 +143,5 @@ class OnboardingController extends Controller
         return Inertia::render('onboarding/done', [
             'firstName' => str($request->user()->name)->before(' ')->toString(),
         ]);
-    }
-
-    /**
-     * Store a new CV for the user and remove the previous file.
-     */
-    private function replaceCv(User $user, UploadedFile $file): void
-    {
-        if ($user->cv_path) {
-            Storage::delete($user->cv_path);
-        }
-
-        $user->forceFill([
-            'cv_path' => $file->store("cv/{$user->id}"),
-            'cv_name' => $file->getClientOriginalName(),
-        ])->save();
     }
 }

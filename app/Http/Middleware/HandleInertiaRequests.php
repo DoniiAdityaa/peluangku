@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\ProfileCompleteness;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -41,6 +42,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            // Shown in the sidebar; computed only when a page asks for props.
+            'profileCompletion' => fn () => $request->user()?->hasCompletedOnboarding()
+                ? [
+                    'percent' => ProfileCompleteness::for($request->user()->loadMissing('interests'))['percent'],
+                    'skipped' => $request->user()->skippedOnboarding(),
+                ]
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

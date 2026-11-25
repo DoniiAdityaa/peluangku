@@ -12,6 +12,7 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            profileCompletion: { percent: number; skipped: boolean } | null;
             [key: string]: unknown;
         };
     }

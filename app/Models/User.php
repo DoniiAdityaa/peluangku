@@ -86,12 +86,19 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'jenjang_tujuan' => 'array',
             'lokasi_tujuan' => 'array',
             'onboarded_at' => 'datetime',
+            'notify_deadline_reminders' => 'boolean',
+            'notify_weekly_digest' => 'boolean',
         ];
     }
 
     /**
-     * Whether the user has finished the onboarding profile.
+     * Whether the user skipped the profile during onboarding.
      */
+    public function skippedOnboarding(): bool
+    {
+        return $this->onboarding_method === 'skipped';
+    }
+
     public function hasCompletedOnboarding(): bool
     {
         return $this->onboarded_at !== null;
