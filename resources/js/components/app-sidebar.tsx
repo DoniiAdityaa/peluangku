@@ -1,4 +1,5 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import BrandLogo from '@/components/brand-logo';
 import {
     ArrowRight,
@@ -9,13 +10,27 @@ import {
     Search,
     Settings,
     UserRound,
+    BadgeCheck,
+    CircleAlert,
+    LogOut,
+    Mail,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import {
     Sidebar,
     SidebarContent,
@@ -29,11 +44,11 @@ import {
     SidebarTrigger,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { UserMenuContent } from '@/components/user-menu-content';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { cn } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { dashboard, logout } from '@/routes';
 import { profile as accountProfile } from '@/routes/account';
 import { index as onboardingIndex } from '@/routes/onboarding';
 import { edit as settings } from '@/routes/profile';
@@ -281,44 +296,155 @@ function ProfileProgress() {
 
 function AccountTile() {
     const { auth } = usePage().props;
-    const { isMobile } = useSidebar();
+    const { isMobile, state } = useSidebar();
     const getInitials = useInitials();
+    const cleanup = useMobileNavigation();
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const collapsed = state === 'collapsed' && !isMobile;
 
     if (!auth.user) {
         return null;
     }
 
+    const initials = getInitials(auth.user.name);
+    const verified = auth.user.email_verified_at !== null;
+
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger className="flex w-full cursor-pointer items-center gap-3 rounded-card bg-muted/40 p-2.5 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0 hover:bg-muted/70 focus-visible:ring-4 focus-visible:ring-primary/15 data-[state=open]:bg-muted/70">
-                <span
-                    aria-hidden="true"
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-teal-300 text-[13px] font-extrabold text-primary-foreground"
+        <>
+            <DropdownMenu>
+                <DropdownMenuTrigger className="flex w-full cursor-pointer items-center gap-3 rounded-card bg-muted/40 p-2.5 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0 hover:bg-muted/70 focus-visible:ring-4 focus-visible:ring-primary/15 data-[state=open]:bg-muted/70">
+                    <span
+                        aria-hidden="true"
+                        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-teal-300 text-[13px] font-extrabold text-primary-foreground"
+                    >
+                        {initials}
+                    </span>
+                    <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+                        <span className="block truncate text-[13px] font-semibold">
+                            {auth.user.name}
+                        </span>
+                        <span className="block truncate text-xs text-muted-foreground">
+                            {auth.user.email}
+                        </span>
+                    </span>
+                    <ChevronsUpDown
+                        className="size-4 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden"
+                        aria-hidden="true"
+                    />
+                    <span className="sr-only">Buka menu akun</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                    // Collapsed: open beside the avatar. Expanded: above the tile, as wide as it.
+                    side={collapsed ? 'right' : isMobile ? 'bottom' : 'top'}
+                    align="end"
+                    sideOffset={collapsed ? 14 : 8}
+                    className={cn(
+                        'rounded-card p-1.5',
+                        collapsed
+                            ? 'w-64'
+                            : 'w-(--radix-dropdown-menu-trigger-width) min-w-60',
+                    )}
                 >
-                    {getInitials(auth.user.name)}
-                </span>
-                <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                    <span className="block truncate text-[13px] font-semibold">
-                        {auth.user.name}
+                    <div className="flex items-center gap-3 rounded-control bg-muted/50 p-3">
+                        <span
+                            aria-hidden="true"
+                            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-teal-300 text-sm font-extrabold text-primary-foreground"
+                        >
+                            {initials}
+                        </span>
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold">
+                                {auth.user.name}
+                            </p>
+                            <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
+                                <Mail
+                                    className="size-3 shrink-0"
+                                    aria-hidden="true"
+                                />
+                                <span className="truncate">
+                                    {auth.user.email}
+                                </span>
+                            </p>
+                            <p
+                                className={cn(
+                                    'mt-1 inline-flex items-center gap-1 text-[11px] font-semibold',
+                                    verified ? 'text-success' : 'text-warning',
+                                )}
+                            >
+                                {verified ? (
+                                    <BadgeCheck
+                                        className="size-3"
+                                        aria-hidden="true"
+                                    />
+                                ) : (
+                                    <CircleAlert
+                                        className="size-3"
+                                        aria-hidden="true"
+                                    />
+                                )}
+                                {verified
+                                    ? 'Email terverifikasi'
+                                    : 'Email belum diverifikasi'}
+                            </p>
+                        </div>
+                    </div>
+                    <DropdownMenuItem
+                        onSelect={() => setConfirmOpen(true)}
+                        className="mt-1.5 cursor-pointer gap-2.5 rounded-control px-3 py-2.5 text-sm font-medium text-destructive focus:bg-destructive/10 focus:text-destructive"
+                    >
+                        <LogOut
+                            className="size-4 text-destructive"
+                            aria-hidden="true"
+                        />
+                        Keluar
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="max-w-sm rounded-card text-center sm:max-w-sm">
+                    <span
+                        aria-hidden="true"
+                        className="mx-auto flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive"
+                    >
+                        <LogOut className="size-5" />
                     </span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                        {auth.user.email}
-                    </span>
-                </span>
-                <ChevronsUpDown
-                    className="size-4 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden"
-                    aria-hidden="true"
-                />
-                <span className="sr-only">Buka menu akun</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-control"
-                align="end"
-                side={isMobile ? 'bottom' : 'top'}
-                sideOffset={8}
-            >
-                <UserMenuContent user={auth.user} />
-            </DropdownMenuContent>
-        </DropdownMenu>
+                    <DialogTitle className="text-center">
+                        Yakin mau keluar?
+                    </DialogTitle>
+                    <DialogDescription className="text-center">
+                        Kamu perlu masuk lagi untuk melihat rekomendasi dan
+                        beasiswa yang kamu simpan.
+                    </DialogDescription>
+                    <DialogFooter className="mt-2 grid grid-cols-2 gap-2 sm:justify-normal">
+                        <DialogClose asChild>
+                            <Button
+                                variant="secondary"
+                                className="h-11 rounded-control"
+                            >
+                                Batal
+                            </Button>
+                        </DialogClose>
+                        <Button
+                            variant="destructive"
+                            asChild
+                            className="h-11 rounded-control"
+                        >
+                            <Link
+                                href={logout()}
+                                as="button"
+                                onClick={() => {
+                                    cleanup();
+                                    router.flushAll();
+                                }}
+                                data-test="logout-button"
+                            >
+                                Ya, keluar
+                            </Link>
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

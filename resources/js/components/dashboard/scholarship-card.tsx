@@ -4,7 +4,6 @@ import {
     Bookmark,
     Check,
     CheckCircle2,
-    Hourglass,
 } from 'lucide-react';
 import { useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
@@ -134,9 +133,9 @@ export function ProviderLogo({
     const toneClass = AVATAR_TONES[hash % AVATAR_TONES.length];
 
     const sizeClasses = {
-        sm: 'size-9 text-xs rounded-lg p-1',
-        md: 'size-12 text-sm rounded-lg',
-        lg: 'size-14 text-base rounded-lg p-2',
+        sm: 'size-9 text-xs rounded-xl p-1',
+        md: 'size-12 text-sm rounded-2xl p-1.5',
+        lg: 'size-14 text-base rounded-2xl p-2',
     }[size];
 
     if (logoSrc && !failed) {
@@ -403,40 +402,87 @@ export default function ScholarshipCard({
                 </p>
             )}
 
-            <div className="flex items-end justify-between gap-3">
-                <ul className="flex flex-wrap gap-1.5" aria-label="Info">
-                    {scholarship.levels.map((level) => (
-                        <li
-                            key={level}
-                            className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary"
-                        >
-                            {level}
-                        </li>
-                    ))}
-                    {scholarship.location && (
-                        <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
-                            {scholarship.location}
-                        </li>
-                    )}
-                    {scholarship.funding && (
-                        <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
-                            Dana {scholarship.funding.toLowerCase()}
-                        </li>
-                    )}
-                    
-                </ul>
-            </div>
-                <div className="flex flex-col gap-2 border-t border-border/60 pt-3">
-                    <div>
-                        <div className="flex items-center justify-between gap-3">
-                            <Pill tone={tier.tone}>{scholarship.score}% {tier.label}</Pill>
-                            <Pill tone={status.tone === 'green' ? 'blue' : status.tone}>
-                            <Hourglass className="size-3.5" aria-hidden="true" />
-                                {daysLeft}
-                            </Pill>
-                        </div>
-                    </div>
+            <ul className="flex flex-wrap gap-1.5" aria-label="Info">
+                {scholarship.levels.map((level) => (
+                    <li
+                        key={level}
+                        className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary"
+                    >
+                        {level}
+                    </li>
+                ))}
+                {scholarship.location && (
+                    <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                        {scholarship.location}
+                    </li>
+                )}
+                {scholarship.funding && (
+                    <li className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium">
+                        Dana {scholarship.funding.toLowerCase()}
+                    </li>
+                )}
+            </ul>
 
+            <div className="flex flex-col gap-2 border-t border-border/60 pt-3">
+                <div>
+                    <div className="flex items-end justify-between gap-3">
+                        <div>
+                            <p className="text-[11px] text-muted-foreground">
+                                Kecocokan denganmu
+                            </p>
+                            <p
+                                className={cn(
+                                    'text-lg leading-tight font-extrabold tabular-nums',
+                                    TEXT[tier.tone],
+                                )}
+                            >
+                                {scholarship.score}%
+                            </p>
+                        </div>
+                        <Pill tone={tier.tone}>{tier.label}</Pill>
+                    </div>
+                    <div
+                        role="progressbar"
+                        aria-valuenow={scholarship.score}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label="Kecocokan"
+                        className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+                    >
+                        <div
+                            className={cn(
+                                'h-full rounded-full',
+                                BAR[tier.tone],
+                            )}
+                            style={{ width: `${scholarship.score}%` }}
+                        />
+                    </div>
+                    {scholarship.reasons.length > 0 && (
+                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+                            <Check
+                                className="mt-px size-3.5 shrink-0 text-success"
+                                strokeWidth={2.5}
+                                aria-hidden="true"
+                            />
+                            {scholarship.reasons.slice(0, 3).join(' · ')}
+                        </p>
+                    )}
+                    <p className="mt-2 flex flex-wrap items-center gap-x-1.5 text-[11px] text-muted-foreground">
+                        <span>Batas pendaftaran</span>
+                        <time
+                            dateTime={scholarship.deadline}
+                            className="font-semibold text-foreground"
+                        >
+                            {deadline.toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                            })}
+                        </time>
+                        <span aria-hidden="true">·</span>
+                        <span className={TEXT[status.tone]}>{daysLeft}</span>
+                    </p>
+                </div>
             </div>
 
             <a
