@@ -112,15 +112,69 @@ class OnboardingTest extends TestCase
             ->assertSessionHasErrors('cv');
     }
 
-    public function test_manual_onboarding_requires_a_cv(): void
+    public function test_manual_onboarding_does_not_require_a_cv(): void
     {
         $user = User::factory()->notOnboarded()->create();
 
         $this->actingAs($user)
             ->post(route('onboarding.store'), $this->validProfile())
-            ->assertSessionHasErrors('cv');
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('onboarding.done'));
 
-        $this->assertNull($user->fresh()->onboarded_at);
+        $this->assertNotNull($user->fresh()->onboarded_at);
+        $this->assertNull($user->fresh()->cv_path);
+    }
+
+    public function test_profile_values_are_kept_within_their_limits(): void
+    {
+        $user = User::factory()->notOnboarded()->create();
+
+        $this->actingAs($user)
+            ->post(route('onboarding.store'), [
+                ...$this->validProfile(),
+                'pendidikan_terakhir' => 'SMA/SMK',
+                'ipk' => '4.10',
+                'semester' => 15,
+                'sertifikat_bahasa' => 'Lainnya',
+            ])
+            ->assertSessionHasErrors(['pendidikan_terakhir', 'ipk', 'semester', 'sertifikat_bahasa']);
+
+        $this->actingAs($user)
+            ->post(route('onboarding.store'), [...$this->validProfile(), 'ipk' => '3.456'])
+            ->assertSessionHasErrors('ipk');
+    }
+
+    public function test_unlisted_city_campus_and_certificate_can_be_typed(): void
+    {
+        $user = User::factory()->notOnboarded()->create();
+
+        $this->actingAs($user)
+            ->post(route('onboarding.store'), [
+                ...$this->validProfile(),
+                'domisili' => 'Klaten, Jawa Tengah',
+                'kampus' => 'Universitas Widya Dharma',
+                'sertifikat_bahasa' => 'TOEIC',
+                'skor_bahasa' => '800',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $user->refresh();
+
+        $this->assertSame('Klaten, Jawa Tengah', $user->domisili);
+        $this->assertSame('Universitas Widya Dharma', $user->kampus);
+        $this->assertSame('TOEIC', $user->sertifikat_bahasa);
+    }
+
+    public function test_profile_form_offers_city_and_campus_lists(): void
+    {
+        $user = User::factory()->notOnboarded()->create();
+
+        $this->actingAs($user)
+            ->get(route('onboarding.profile'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('options.jenjangSaatIni', ['D3/D4', 'S1', 'S2'])
+                ->where('cities', fn ($cities) => collect($cities)->contains('value', 'Semarang, Jawa Tengah'))
+                ->where('campuses', fn ($campuses) => collect($campuses)->contains('value', 'Universitas Dian Nuswantoro')));
     }
 
     public function test_profile_can_be_saved_and_onboarding_finished(): void
@@ -214,7 +268,8 @@ class OnboardingTest extends TestCase
             ->assertSessionHasErrors([
                 'name', 'tanggal_lahir', 'jenis_kelamin', 'no_whatsapp', 'domisili',
                 'pendidikan_terakhir', 'kampus', 'jurusan', 'jenjang_tujuan',
-                'jenis_pendanaan', 'interests', 'cv',
-            ]);
+                'jenis_pendanaan', 'interests',
+            ])
+            ->assertSessionDoesntHaveErrors('cv');
     }
 }

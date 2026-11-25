@@ -7,6 +7,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Desktop screens with little height, e.g. Windows laptops at 125–150% scaling. */
+@custom-variant short (@media (min-width: 64rem) and (max-height: 57.5rem));
+@custom-variant shorter (@media (min-width: 64rem) and (max-height: 43.75rem));
+
 /* Palet tetap: angka kecil lebih terang, angka besar lebih gelap. */
 @theme {
     --color-navy-50: #eef3f8;

@@ -95,9 +95,9 @@ export default function AuthBrandLayout({
     const copy = content[variant];
 
     return (
-        <main className="flex min-h-svh items-center justify-center bg-background p-4 text-foreground sm:p-6 lg:p-8">
+        <main className="flex min-h-svh items-center justify-center bg-background p-4 text-foreground sm:p-6 lg:p-8 short:py-4 shorter:py-3">
             <div className="grid w-full max-w-6xl overflow-hidden rounded-panel border border-border/60 bg-card p-2 shadow-card lg:grid-cols-2 lg:gap-8">
-                <aside className="relative hidden flex-col overflow-hidden rounded-card bg-navy-700 p-10 text-white lg:flex">
+                <aside className="relative hidden flex-col overflow-hidden rounded-card bg-navy-700 p-10 text-white lg:flex short:p-8 shorter:px-8 shorter:py-6">
                     <Link
                         href={home()}
                         className="inline-flex w-fit items-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
@@ -107,14 +107,14 @@ export default function AuthBrandLayout({
                             alt="Peluangku — beranda"
                             width="4998"
                             height="1116"
-                            className="h-auto w-44"
+                            className="h-auto w-44 short:w-36"
                         />
                     </Link>
-                    <div className="mt-12">
+                    <div className="mt-12 short:mt-8 shorter:mt-6">
                         <p className="mb-4 text-xs font-semibold tracking-[0.18em] text-teal-200 uppercase">
                             {copy.asideEyebrow}
                         </p>
-                        <h2 className="max-w-sm text-4xl leading-tight font-bold tracking-tight">
+                        <h2 className="max-w-sm text-4xl leading-tight font-bold tracking-tight short:text-3xl">
                             {copy.asideTitle[0]}
                             <br />
                             {copy.asideTitle[1]}
@@ -127,7 +127,7 @@ export default function AuthBrandLayout({
                         key={variant}
                         src={`/animation/peluangku-${copy.animation}.json`}
                     />
-                    <div className="mt-auto flex items-center justify-between border-t border-white/15 pt-5 text-xs text-navy-100">
+                    <div className="mt-auto flex items-center justify-between border-t border-white/15 pt-5 text-xs text-navy-100 short:pt-4">
                         <span>Mulai dari satu langkah kecil.</span>
                         <ArrowUpRight
                             className="size-5 text-teal-200"
@@ -135,7 +135,7 @@ export default function AuthBrandLayout({
                         />
                     </div>
                 </aside>
-                <section className="flex items-center justify-center px-4 py-8 sm:px-10 sm:py-12 lg:px-8">
+                <section className="flex items-center justify-center px-4 py-8 sm:px-10 sm:py-12 lg:px-8 short:py-6 shorter:py-4">
                     <div className="w-full max-w-sm">
                         <Link
                             href={home()}
@@ -156,13 +156,13 @@ export default function AuthBrandLayout({
                                 className="hidden h-auto w-40 dark:block"
                             />
                         </Link>
-                        <p className="mb-3 text-xs font-semibold tracking-[0.16em] text-link uppercase">
+                        <p className="mb-3 text-xs font-semibold tracking-[0.16em] text-link uppercase short:mb-2 shorter:hidden">
                             {copy.eyebrow}
                         </p>
-                        <h1 className="text-3xl font-bold tracking-tight">
+                        <h1 className="text-3xl font-bold tracking-tight short:text-2xl">
                             {title}
                         </h1>
-                        <p className="mt-3 mb-8 text-sm leading-relaxed text-muted-foreground">
+                        <p className="mt-3 mb-8 text-sm leading-relaxed text-muted-foreground short:mt-2 short:mb-6 shorter:mb-4">
                             {description}
                         </p>
                         {children}

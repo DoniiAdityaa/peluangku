@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Account\CertificateController;
 use App\Http\Controllers\Account\ProfileDocumentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoriteScholarshipController;
@@ -18,6 +19,11 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::get('profil', [ProfileDocumentsController::class, 'edit'])->name('account.profile');
     Route::post('profil', [ProfileDocumentsController::class, 'update'])->name('account.profile.update');
 });
+
+// Used while onboarding and on "Profil & Dokumen".
+Route::middleware(['auth', 'verified'])
+    ->get('profil/sertifikat/{certificate}', [CertificateController::class, 'show'])
+    ->name('certificates.show');
 
 // Skipped users may come back here to fill their profile in later.
 Route::middleware(['auth', 'verified', 'not-onboarded'])
