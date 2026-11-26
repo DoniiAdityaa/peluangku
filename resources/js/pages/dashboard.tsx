@@ -8,7 +8,6 @@ import {
     Clock,
     Hourglass,
     Search,
-    SearchX,
     Sparkles,
     UserRoundPen,
 } from 'lucide-react';
@@ -22,6 +21,8 @@ import ScholarshipCard, {
 import type { Scholarship } from '@/components/dashboard/scholarship-card';
 import ChoiceChips from '@/components/form/choice-chips';
 import IconBadge from '@/components/kit/icon-badge';
+import Mascot from '@/components/mascot';
+import type { MascotPose } from '@/components/mascot';
 import type { Tone } from '@/components/kit/icon-badge';
 import ScoreRing from '@/components/kit/score-ring';
 import { cardClass, primaryButtonClass } from '@/lib/ui';
@@ -368,7 +369,11 @@ function Recommendations({
                 />
             ) : shown.length === 0 ? (
                 <EmptyState
-                    icon={SearchX}
+                    mascot={
+                        needle !== '' || filter !== 'Semua'
+                            ? 'tidak-ditemukan'
+                            : 'kosong'
+                    }
                     title="Belum ada yang pas"
                     text={
                         needle !== ''
@@ -414,11 +419,14 @@ function Recommendations({
 
 function EmptyState({
     icon,
+    mascot,
     title,
     text,
     action,
 }: {
-    icon: LucideIcon;
+    icon?: LucideIcon;
+    /** Show Lumi instead of an icon. */
+    mascot?: MascotPose;
     title: string;
     text: string;
     action: ReactNode;
@@ -430,7 +438,11 @@ function EmptyState({
                 'flex flex-col items-center gap-3 border-dashed px-6 py-12 text-center',
             )}
         >
-            <IconBadge icon={icon} tone="navy" size="lg" />
+            {mascot ? (
+                <Mascot pose={mascot} className="-mt-4 -mb-2 size-36" />
+            ) : (
+                icon && <IconBadge icon={icon} tone="navy" size="lg" />
+            )}
             <h3 className="mt-1 text-base font-bold">{title}</h3>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
                 {text}
@@ -713,10 +725,9 @@ function SavedList({ items }: { items: Saved[] }) {
             <div className={cn(cardClass, 'p-2')}>
                 {items.length === 0 ? (
                     <div className="flex items-center gap-3 p-3">
-                        <IconBadge
-                            icon={Bookmark}
-                            tone="navy"
-                            className="size-9"
+                        <Mascot
+                            pose="kosong"
+                            className="-my-2 size-16 shrink-0"
                         />
                         <div className="text-sm">
                             <p className="text-muted-foreground">
