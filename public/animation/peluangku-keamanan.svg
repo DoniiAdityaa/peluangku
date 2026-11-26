@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 400" role="img" aria-label="Lumi memegang perisai bergembok">
+<title>Lumi memegang perisai bergembok</title>
+<style>
+.lm-body,.lm-hop,.lm-wave,.lm-blink,.lm-shine,.lm-spark,.lm-card,.lm-pop,.lm-env,.lm-check,.lm-shield,.lm-glint,.lm-shadow{transform-box:fill-box;transform-origin:center}
+.lm-body{animation:lmBob 3s ease-in-out infinite}
+.lm-shadow{animation:lmShadow 3s ease-in-out infinite}
+.lm-blink{animation:lmBlink 4s infinite}
+.lm-shine{animation:lmShine 3.2s ease-in-out infinite}
+.lm-spark{animation:lmTwinkle 2.4s ease-in-out infinite}
+.lm-wave{transform-box:view-box;transform-origin:306px 192px;animation:lmWave 1.4s ease-in-out infinite}
+.lm-hi{animation:lmHi 1.4s ease-in-out infinite}
+.lm-flap-closed{transform-box:fill-box;transform-origin:50% 0%;animation:lmFlapClosed 4s ease-in-out infinite}
+.lm-flap-open{transform-box:fill-box;transform-origin:50% 100%;animation:lmFlapOpen 4s ease-in-out infinite}
+.lm-letter{animation:lmLetter 4s ease-in-out infinite}
+.lm-shake{animation:lmShake 2.6s ease-in-out infinite}
+.lm-tilt{transform-box:view-box;transform-origin:230px 160px;animation:lmTilt 2.6s ease-in-out infinite}
+.lm-sweat{transform-box:fill-box;animation:lmSweat 2.6s ease-in infinite}
+.lm-warn{transform-box:fill-box;transform-origin:center;animation:lmWarn 1.3s ease-in-out infinite}
+.lm-sweep{transform-box:view-box;transform-origin:310px 230px;animation:lmSweep 2.4s ease-in-out infinite}
+.lm-look{animation:lmLook 2.4s ease-in-out infinite}
+.lm-q{transform-box:fill-box;transform-origin:center;animation:lmQ 2.4s ease-in-out infinite}
+.lm-flap-l{transform-box:fill-box;transform-origin:100% 100%;animation:lmFlapL 2s ease-in-out infinite}
+.lm-flap-r{transform-box:fill-box;transform-origin:0% 100%;animation:lmFlapR 2s ease-in-out infinite}
+.lm-dust{transform-box:fill-box;animation:lmDust 2.1s ease-out infinite}
+.lm-hop{transform-box:view-box;transform-origin:230px 318px;animation:lmHop 1.6s cubic-bezier(.3,.7,.4,1) infinite}
+.lm-pop{animation:lmPop 1.6s ease-out infinite}
+.lm-env{animation:lmEnv 2.4s ease-in-out infinite}
+.lm-check{animation:lmCheck 4s ease-out infinite}
+.lm-shield{animation:lmShield 3s ease-in-out infinite}
+.lm-glint{transform-box:view-box;animation:lmGlint 3s ease-in-out infinite}
+.lm-float{animation:lmFloat 3s ease-in-out infinite}
+.lm-bubble{animation:lmBubble 6s ease-in-out infinite}
+.lm-dot{animation:lmDot 1s ease-in-out infinite}
+.lm-ping{animation:lmPing 2s ease-in-out infinite}
+@keyframes lmBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes lmShadow{0%,100%{transform:scaleX(1);opacity:.35}50%{transform:scaleX(.9);opacity:.25}}
+@keyframes lmBlink{0%,90%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+@keyframes lmShine{0%,60%,100%{opacity:.2}75%{opacity:.95}}
+@keyframes lmTwinkle{0%,100%{transform:scale(.6);opacity:.3}50%{transform:scale(1.1);opacity:1}}
+@keyframes lmWave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(16deg)}}
+@keyframes lmHi{0%,100%{opacity:0;transform:translateX(-4px)}50%{opacity:1;transform:translateX(0)}}
+@keyframes lmFlapClosed{0%,15%{transform:scaleY(1)}25%,88%{transform:scaleY(0)}96%,100%{transform:scaleY(1)}}
+@keyframes lmFlapOpen{0%,24%{transform:scaleY(0)}34%,86%{transform:scaleY(1)}92%,100%{transform:scaleY(0)}}
+@keyframes lmLetter{0%,34%{transform:translateY(0)}54%,84%{transform:translateY(-34px)}94%,100%{transform:translateY(0)}}
+@keyframes lmShake{0%,60%,100%{transform:translateX(0)}64%{transform:translateX(-5px)}68%{transform:translateX(5px)}72%{transform:translateX(-4px)}76%{transform:translateX(3px)}80%{transform:translateX(0)}}
+@keyframes lmTilt{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(-11deg) translateY(3px)}}
+@keyframes lmSweat{0%,30%{transform:translateY(0);opacity:0}40%{opacity:1}90%{transform:translateY(26px);opacity:.9}100%{transform:translateY(30px);opacity:0}}
+@keyframes lmWarn{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes lmSweep{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(10deg)}}
+@keyframes lmLook{0%,100%{transform:translateX(-4px)}50%{transform:translateX(5px)}}
+@keyframes lmQ{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+@keyframes lmFlapL{0%,100%{transform:rotate(0)}50%{transform:rotate(-10deg)}}
+@keyframes lmFlapR{0%,100%{transform:rotate(0)}50%{transform:rotate(10deg)}}
+@keyframes lmDust{0%{transform:translateY(0);opacity:0}30%{opacity:.9}100%{transform:translateY(-40px);opacity:0}}
+@keyframes lmHop{0%,100%{transform:translateY(0) scale(1.04,.96)}15%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-26px) scale(.98,1.03)}75%{transform:translateY(0) scale(1,1)}}
+@keyframes lmPop{0%,40%{transform:scale(0);opacity:0}55%{transform:scale(1.2);opacity:1}70%,100%{transform:scale(1);opacity:1}}
+@keyframes lmEnv{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-8px) rotate(-4deg)}60%{transform:translateY(0) rotate(2deg)}}
+@keyframes lmCheck{0%,54%{transform:scale(0);opacity:0}62%{transform:scale(1.3);opacity:1}70%,84%{transform:scale(1);opacity:1}92%,100%{transform:scale(0);opacity:0}}
+@keyframes lmShield{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg) translateY(-3px)}}
+@keyframes lmGlint{0%,35%{transform:translateX(0)}75%,100%{transform:translateX(120px)}}
+@keyframes lmFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes lmBubble{0%,55%,100%{opacity:0;transform:translateY(50%) translateX(8px)}65%,90%{opacity:1;transform:translateY(50%) translateX(0)}}
+@keyframes lmDot{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-3px);opacity:1}}
+@keyframes lmPing{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.lm-body,.lm-hop,.lm-wave,.lm-blink,.lm-shine,.lm-spark,.lm-pop,.lm-env,.lm-check,.lm-shield,.lm-glint,.lm-float,.lm-bubble,.lm-dot,.lm-ping,.lm-shadow,.lm-hi,.lm-flap-closed,.lm-flap-open,.lm-letter,.lm-shake,.lm-tilt,.lm-sweat,.lm-warn,.lm-sweep,.lm-look,.lm-q,.lm-flap-l,.lm-flap-r,.lm-dust{animation:none}}
+</style>
+<defs>
+<linearGradient id="dBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E5688"></stop><stop offset="1" stop-color="#132742"></stop></linearGradient>
+<linearGradient id="dFlip" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#24456F"></stop><stop offset="1" stop-color="#0E2038"></stop></linearGradient>
+<linearGradient id="dBelly" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"></stop><stop offset="1" stop-color="#E2E8F0"></stop></linearGradient>
+<linearGradient id="dFrame" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EEAD4"></stop><stop offset="0.5" stop-color="#14B8A6"></stop><stop offset="1" stop-color="#0F766E"></stop></linearGradient>
+<linearGradient id="dLens" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E0F2FE" stop-opacity="0.75"></stop><stop offset="1" stop-color="#99F6E4" stop-opacity="0.25"></stop></linearGradient>
+<linearGradient id="dOrange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDBA74"></stop><stop offset="1" stop-color="#EA580C"></stop></linearGradient>
+</defs>
+<circle cx="230" cy="205" r="150" fill="#3D7DB3"></circle>
+<circle cx="230" cy="205" r="150" fill="none" stroke="#99F6E4" stroke-opacity="0.35" stroke-width="2"></circle>
+<ellipse class="lm-shadow" cx="230" cy="318" rx="70" ry="9" fill="#020617" opacity="0.35"></ellipse>
+<g class="lm-body">
+<ellipse cx="204" cy="310" rx="22" ry="10" fill="url(#dOrange)"></ellipse>
+<ellipse cx="256" cy="310" rx="22" ry="10" fill="url(#dOrange)"></ellipse>
+<ellipse class="lm-flip-l" cx="148" cy="236" rx="20" ry="50" fill="url(#dFlip)" transform="rotate(18 148 236)"></ellipse>
+<ellipse cx="292" cy="248" rx="20" ry="44" fill="url(#dFlip)" transform="rotate(-25 292 248)"></ellipse>
+<ellipse cx="230" cy="200" rx="82" ry="108" fill="url(#dBody)" stroke="#E0F2FE" stroke-opacity="0.55" stroke-width="3"></ellipse>
+<path d="M226 96 Q218 80 230 74 Q238 84 232 96" fill="#2E5688"></path>
+<ellipse cx="230" cy="236" rx="58" ry="70" fill="url(#dBelly)"></ellipse>
+<circle cx="205" cy="160" r="30" fill="#FFFFFF"></circle>
+<circle cx="255" cy="160" r="30" fill="#FFFFFF"></circle>
+<g class="lm-blink">
+<circle cx="203" cy="161" r="8.5" fill="#0B1424"></circle>
+<circle cx="257" cy="161" r="8.5" fill="#0B1424"></circle>
+<circle cx="206" cy="157" r="3" fill="#FFFFFF"></circle>
+<circle cx="260" cy="157" r="3" fill="#FFFFFF"></circle>
+</g>
+<g class="lm-glasses">
+<circle cx="203" cy="160" r="22" fill="url(#dLens)" stroke="url(#dFrame)" stroke-width="5"></circle>
+<circle cx="257" cy="160" r="22" fill="url(#dLens)" stroke="url(#dFrame)" stroke-width="5"></circle>
+<g class="lm-shine">
+<polygon points="192,176 204,142 211,144 199,179" fill="#FFFFFF"></polygon>
+<polygon points="205,180 214,158 217,160 208,181" fill="#FFFFFF" opacity="0.7"></polygon>
+<polygon points="246,176 258,142 265,144 253,179" fill="#FFFFFF"></polygon>
+<polygon points="259,180 268,158 271,160 262,181" fill="#FFFFFF" opacity="0.7"></polygon>
+</g>
+<path d="M225 158 Q230 152 235 158" fill="none" stroke="url(#dFrame)" stroke-width="5" stroke-linecap="round"></path>
+<path d="M181 156 L166 150 M279 156 L294 150" stroke="#0F766E" stroke-width="4" stroke-linecap="round"></path>
+</g>
+<path d="M219 188 Q230 182 241 188 L230 202 Z" fill="url(#dOrange)"></path>
+<ellipse cx="186" cy="198" rx="9" ry="5" fill="#FB7185" opacity="0.55"></ellipse>
+<ellipse cx="274" cy="198" rx="9" ry="5" fill="#FB7185" opacity="0.55"></ellipse>
+<g class="lm-shield">
+<path d="M300 188 L344 202 V240 Q344 274 300 292 Q256 274 256 240 V202 Z" fill="url(#dFrame)" stroke="#CCFBF1" stroke-width="3"></path>
+<rect x="286" y="232" width="28" height="24" rx="5" fill="#FFFFFF"></rect>
+<path d="M292 232 v-8 a8 8 0 0 1 16 0 v8" fill="none" stroke="#FFFFFF" stroke-width="4"></path>
+<circle cx="300" cy="243" r="3.5" fill="#0F766E"></circle>
+<clipPath id="dShieldClip"><path d="M300 188 L344 202 V240 Q344 274 300 292 Q256 274 256 240 V202 Z"></path></clipPath>
+<g clip-path="url(#dShieldClip)"><g class="lm-glint"><path d="M236 300 L254 300 L294 180 L276 180 Z" fill="#FFFFFF" opacity="0.55"></path><path d="M260 300 L266 300 L306 180 L300 180 Z" fill="#FFFFFF" opacity="0.35"></path></g></g>
+</g>
+</g>
+</svg>
