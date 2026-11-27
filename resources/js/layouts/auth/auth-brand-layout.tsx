@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ArrowUpRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import AuthIllustration from '@/components/auth-illustration';
+import type { MascotPose } from '@/components/mascot';
 import { home } from '@/routes';
 
 export type AuthBrandVariant =
@@ -18,7 +19,7 @@ const securityAside = {
     asideTitle: ['Keamanan dulu,', 'baru melangkah.'] as [string, string],
     asideDescription:
         'Kami menjaga akunmu supaya data profil dan dokumen beasiswamu tetap aman.',
-    animation: 'login',
+    pose: 'keamanan' as MascotPose,
 };
 
 const content: Record<
@@ -28,7 +29,7 @@ const content: Record<
         asideTitle: [string, string];
         asideDescription: string;
         eyebrow: string;
-        animation: string;
+        pose: MascotPose;
     }
 > = {
     register: {
@@ -37,7 +38,7 @@ const content: Record<
         asideDescription:
             'Jelajahi beasiswa dan temukan langkah berikutnya untuk masa depanmu.',
         eyebrow: 'Selamat datang di Peluangku',
-        animation: 'register',
+        pose: 'register',
     },
     login: {
         asideEyebrow: 'Peluangmu menanti',
@@ -45,7 +46,7 @@ const content: Record<
         asideDescription:
             'Kembali jelajahi peluang beasiswa dan rencanakan langkah berikutnya bersama Peluangku.',
         eyebrow: 'Senang bertemu kamu lagi',
-        animation: 'login',
+        pose: 'login',
     },
     verification: {
         asideEyebrow: 'Satu langkah lagi',
@@ -53,7 +54,7 @@ const content: Record<
         asideDescription:
             'Setelah email terverifikasi, kamu bisa melengkapi profil dan mulai mencari beasiswa yang cocok.',
         eyebrow: 'Verifikasi email',
-        animation: 'cari',
+        pose: 'verifikasi',
     },
     'forgot-password': {
         asideEyebrow: 'Tenang, bisa diatur ulang',
@@ -61,7 +62,7 @@ const content: Record<
         asideDescription:
             'Kami kirimkan link untuk membuat kata sandi baru ke emailmu.',
         eyebrow: 'Lupa kata sandi',
-        animation: 'login',
+        pose: 'login',
     },
     'reset-password': {
         asideEyebrow: 'Hampir selesai',
@@ -69,7 +70,7 @@ const content: Record<
         asideDescription:
             'Buat kata sandi yang kuat, lalu lanjutkan pencarian beasiswamu.',
         eyebrow: 'Atur ulang kata sandi',
-        animation: 'login',
+        pose: 'login',
     },
     'confirm-password': {
         ...securityAside,
@@ -123,10 +124,7 @@ export default function AuthBrandLayout({
                             {copy.asideDescription}
                         </p>
                     </div>
-                    <AuthIllustration
-                        key={variant}
-                        src={`/animation/peluangku-${copy.animation}.json`}
-                    />
+                    <AuthIllustration key={variant} pose={copy.pose} />
                     <div className="mt-auto flex items-center justify-between border-t border-white/15 pt-5 text-xs text-navy-100 short:pt-4">
                         <span>Mulai dari satu langkah kecil.</span>
                         <ArrowUpRight

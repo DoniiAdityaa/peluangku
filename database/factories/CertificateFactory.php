@@ -18,7 +18,7 @@ class CertificateFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => 'Juara 1 '.fake()->words(2, true),
+            'name' => 'Juara 1 '.implode(' ', (array) fake()->words(2)),
             'path' => 'certificates/sample.jpg',
             'original_name' => 'sertifikat.jpg',
             'size' => 240_000,

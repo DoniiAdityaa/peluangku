@@ -5,9 +5,10 @@ use App\Http\Controllers\Account\ProfileDocumentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoriteScholarshipController;
 use App\Http\Controllers\Onboarding\OnboardingController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::get('/', WelcomeController::class)->name('home');
 
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
