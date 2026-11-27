@@ -158,7 +158,35 @@ php artisan db:seed --class=ScholarshipSeeder
 
 Seeder menggunakan nama program dan tautan penyelenggara sebagai ilustrasi, tetapi **persyaratan serta deadline-nya adalah data demo**. Menjalankan ulang seeder memperbarui entri contoh tersebut. Jangan gunakan seeder ini untuk mengisi data produksi.
 
-### 4. Jalankan aplikasi
+### 4a. Tarik data beasiswa asli
+
+Katalog beasiswa diisi dari portal resmi [SatuBeasiswa](https://satubeasiswa.kemdiktisaintek.go.id/beasiswa) milik Kementerian Pendidikan Tinggi, Sains, dan Teknologi:
+
+```bash
+php artisan scholarships:sync
+```
+
+Perintah ini membaca seluruh halaman daftar beasiswa, lalu menulis hasilnya ke tabel `scholarships` dengan `source = kemdiktisaintek`. Jalankan berulang kali dengan aman: beasiswa dicocokkan berdasarkan tautan resminya, jadi entri yang sudah ada diperbarui, bukan diduplikasi.
+
+Untuk memeriksa hasil tanpa menyimpan apa pun:
+
+```bash
+php artisan scholarships:sync --dry-run
+php artisan scholarships:sync --dry-run --max-pages=1
+```
+
+**Tidak perlu API key, tidak perlu layanan scraper, tidak perlu browser headless.** Halaman daftar SatuBeasiswa sudah dirender di server dan menyertakan data beasiswanya sebagai state terstruktur, sehingga satu permintaan HTTP per halaman sudah cukup. Detail teknisnya ada di [`app/Services/SatuBeasiswa`](app/Services/SatuBeasiswa).
+
+Yang perlu diketahui tentang sumber ini:
+
+- **Detail persyaratan tidak tersedia.** Halaman detail beasiswa di SatuBeasiswa hanya bisa dibuka setelah masuk, jadi Peluangku hanya menyimpan field yang ada di halaman daftar: nama, penyelenggara, jenjang, bidang ilmu, cakupan dana, deskripsi singkat, logo, dan tenggat.
+- **Tidak ada filter wilayah.** Situs tidak menyimpan provinsi, jadi `region` selalu `null`. Nilai itu dibaca pencocok sebagai "terbuka untuk semua wilayah", bukan sebagai syarat yang ditemukan.
+- **Hanya beasiswa dalam negeri.** Baris yang khusus luar negeri dibuang secara default; ubah `SATUBEASISWA_DOMESTIC_ONLY=false` untuk menyimpannya.
+- **Beasiswa tanpa tenggat dilewati.** Saat ini ada beberapa entri yang belum mencantumkan tanggal; tanpa tenggat, kartu dashboard tidak punya linimasa untuk ditampilkan.
+
+Sinkronisasi juga berjalan otomatis setiap malam lewat penjadwal Laravel (`routes/console.php`), jadi jalankan `php artisan schedule:work` di lingkungan lokal.
+
+### 4b. Jalankan aplikasi
 
 ```bash
 composer dev
@@ -201,7 +229,9 @@ app/
 ├── Actions/                 # Penyimpanan profil dan dokumen
 ├── Http/Controllers/        # Landing, dashboard, onboarding, dan pengaturan
 ├── Models/                  # User, Scholarship, Certificate, dan relasinya
-├── Services/                # Pencocokan beasiswa dan kontrak parser CV
+├── Services/                # Pencocokan beasiswa, sumber data, dan kontrak parser CV
+│   ├── SatuBeasiswa/        # Pembacaan portal beasiswa nasional
+│   └── Scholarships/        # Normalisasi, impor, dan sinkronisasi
 └── Support/                 # Opsi formulir dan kelengkapan profil
 database/                    # Migrasi, factory, dan data contoh
 docs/images/                 # Screenshot, logo, dan ilustrasi dokumentasi
@@ -221,7 +251,8 @@ tests/                       # Unit test dan feature test
 - Percakapan dengan Lumi untuk membantu memahami persyaratan dan dokumen.
 - Pengiriman pengingat deadline dan ringkasan beasiswa.
 - Halaman pencarian khusus, detail beasiswa, serta pelacakan lamaran.
-- Pengayaan dan verifikasi data beasiswa dari sumber resmi.
+- Memperluas sumber data ke portal pemerintah lain selain SatuBeasiswa.
+- Menampilkan detail persyaratan; saat ini terhalang karena halaman detail SatuBeasiswa butuh login.
 
 ## Kontribusi
 

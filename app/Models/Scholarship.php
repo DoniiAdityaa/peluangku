@@ -30,12 +30,15 @@ use Illuminate\Support\Carbon;
 #[Fillable([
     'scholarship_name', 'link', 'percentage', 'deadline', 'major',
     'provider', 'levels', 'location', 'region', 'funding', 'min_gpa',
-    'language_requirement', 'description', 'image',
+    'language_requirement', 'description', 'image', 'source', 'last_synced_at',
 ])]
 class Scholarship extends Model
 {
     /** @use HasFactory<ScholarshipFactory> */
     use HasFactory;
+
+    /** Rows this app scraped, as opposed to curated or seeded by hand. */
+    public const SOURCE_KEMDIKTISAIKTEK = 'kemdiktisaintek';
 
     /**
      * Get the users who favorited this scholarship.
@@ -75,6 +78,7 @@ class Scholarship extends Model
             'deadline' => 'date',
             'levels' => 'array',
             'min_gpa' => 'decimal:2',
+            'last_synced_at' => 'datetime',
         ];
     }
 }
